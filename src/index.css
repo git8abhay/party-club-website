@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body {
+    transition: background-color 800ms cubic-bezier(0.4, 0, 0.2, 1), color 800ms cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Manrope', sans-serif;
+    background-color: #ffffff;
+    color: #1c1c1c;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Sora', sans-serif;
+    color: #1c1c1c;
+    transition: color 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Class-based dark overrides for base colors */
+  .dark body {
+    color: #f8fafc;
+  }
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: #ffffff;
+  }
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Custom Clean Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #090414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #68268e;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ed2891;
+}
+
+/* Zomato-style Card and Section Classes */
+.zomato-card {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(28, 28, 28, 0.08);
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .zomato-card {
+  background: #140c24;
+  border-color: #26163d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.zomato-card:hover {
+  box-shadow: 0 8px 20px rgba(28, 28, 28, 0.12);
+}
+
+.dark .zomato-card:hover {
+  box-shadow: 0 12px 30px rgba(237, 40, 145, 0.15);
+  border-color: #3b205e;
+}
+
+.zomato-nav-sticky {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e8e8e8;
+}
+
+/* Hide default scrollbars but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Gradient Text matching Party Club guide */
+.text-gradient-pc {
+  background: linear-gradient(135deg, #ed2891 0%, #68268e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animated Gradient Background for Hero Fallback */
+@keyframes animatedGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-bg {
+  background: linear-gradient(-45deg, #090414, #18092d, #0d021f, #220330);
+  background-size: 400% 400%;
+  animation: animatedGradient 15s ease infinite;
+}
+
+/* Theme Transition Class */
+.theme-transition {
+  transition: background-color 800ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 800ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 800ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 800ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 800ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Neon Glow utilities */
+.glow-purple {
+  box-shadow: 0 0 25px rgba(104, 38, 142, 0.15);
+}
+.dark .glow-purple {
+  box-shadow: 0 0 30px rgba(104, 38, 142, 0.35);
+}
+
+.glow-pink {
+  box-shadow: 0 0 25px rgba(237, 40, 145, 0.15);
+}
+.dark .glow-pink {
+  box-shadow: 0 0 35px rgba(237, 40, 145, 0.4);
+}
+
+
