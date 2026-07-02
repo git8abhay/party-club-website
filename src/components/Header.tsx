@@ -40,15 +40,12 @@ export default function Header() {
                 Get the App
               </a>
             ) : (
-              <a href="#" className="flex items-center gap-2 group select-none">
+              <a href="/" className="flex items-center gap-2 group select-none">
                 <img
-                  src="/logo_1.png"
+                  src="/logo_2.png"
                   alt="Party Club India logo"
                   className="h-8.5 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 />
-                <span className="text-xl font-black tracking-tight leading-none bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
-                  party club
-                </span>
               </a>
             )}
           </div>
@@ -65,7 +62,6 @@ export default function Header() {
                 >
                   <div className="flex items-center gap-1.5 text-brand-secondary">
                     <MapPin className="h-4 w-4" />
-                    <span className="text-slate-800 font-extrabold text-xs">Delhi NCR</span>
                   </div>
                   <div className="w-[1px] h-4 bg-slate-300" />
                   <div className="flex-1 flex items-center gap-1.5">

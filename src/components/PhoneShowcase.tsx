@@ -1,6 +1,25 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, GlassWater, Music, Wallet, Cake, Percent, MessageSquare, Calendar, ShieldCheck, MapPin, Wifi, Battery } from "lucide-react";
+import {
+  Bell,
+  Cake,
+  Calendar,
+  ChevronDown,
+  Grid2X2,
+  Heart,
+  Home,
+  MapPinned,
+  MapPin,
+  Mic,
+  Music,
+  Percent,
+  Search,
+  Sparkles,
+  UserRound,
+  Wallet,
+  GlassWater,
+  MessageSquare,
+} from "lucide-react";
 
 export default function PhoneShowcase() {
   const [contactMethod, setContactMethod] = useState<"email" | "phone">("email");
@@ -111,89 +130,142 @@ export default function PhoneShowcase() {
   ];
 
   const phoneMockupContent = (isMobile: boolean = false) => {
+    const categoryItems = [
+      {
+        name: "Birthday Decorators",
+        image: "linear-gradient(135deg, #06b6d4 0%, #0ea5e9 45%, #f97316 100%)",
+      },
+      {
+        name: "Cake Vendors",
+        image: "linear-gradient(135deg, #f8d7a8 0%, #8b4513 48%, #2b1208 100%)",
+      },
+      {
+        name: "DJs",
+        image: "linear-gradient(135deg, #111827 0%, #64748b 45%, #ef4444 100%)",
+      },
+      {
+        name: "Photographers",
+        image: "linear-gradient(135deg, #111111 0%, #3f3f46 55%, #0f172a 100%)",
+      },
+    ];
+
     return (
-      <div className={`relative ${isMobile ? 'w-[250px] h-[340px]' : 'w-[290px] h-[460px]'} bg-black rounded-t-[40px] p-3 shadow-[0_25px_60px_rgba(104,38,142,0.14)] border-4 border-b-0 border-slate-850 flex flex-col overflow-hidden`}>
+      <div className={`relative ${isMobile ? 'w-[min(280px,calc(100vw-42px))] h-[520px]' : 'w-[330px] h-[580px]'} bg-black rounded-t-[44px] p-3 shadow-[0_25px_60px_rgba(104,38,142,0.14)] border-4 border-b-0 border-slate-850 flex flex-col overflow-hidden`}>
         {/* iPhone Notch */}
-        <div className="absolute top-4.5 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-30" />
+        <div className="absolute top-4.5 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-full z-30" />
 
         {/* Screen Shell */}
-        <div className="w-full h-full rounded-t-[28px] bg-white border border-slate-200 flex flex-col pt-7 px-3 overflow-hidden relative">
-          {/* Status Bar */}
-          <div className="px-3 flex items-center justify-between text-[9px] font-black text-slate-500 mb-4 select-none">
-            <span>9:41</span>
-            <div className="flex items-center gap-1">
-              <Wifi className="h-2.5 w-2.5" />
-              <Battery className="h-2.5 w-2.5" />
+        <div className="w-full h-full rounded-t-[30px] bg-white border border-slate-200 flex flex-col overflow-hidden relative text-left">
+          <div className="bg-[#5f1b7b] px-4 pt-8 pb-5 rounded-b-[24px] shadow-[0_12px_24px_rgba(95,27,123,0.22)]">
+            <div className="flex items-start justify-between gap-3 text-white">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 stroke-[3]" />
+                  <span className="text-[17px] font-black leading-none">New Delhi</span>
+                  <ChevronDown className="h-3.5 w-3.5 mt-0.5" />
+                </div>
+                <p className="mt-2 text-[11px] font-extrabold text-white/80 leading-none">
+                  New Delhi, Uttar Pradesh, India
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white">
+                  <Bell className="h-4.5 w-4.5" />
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#9f7a20] bg-[#fff2b9] text-[#7a5610]">
+                  <span className="text-base font-black">T</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex h-12 items-center gap-3 rounded-[22px] bg-white px-4 text-slate-500 shadow-[0_8px_18px_rgba(22,22,22,0.16)]">
+              <Search className="h-5 w-5 shrink-0 text-slate-500" />
+              <span className="min-w-0 flex-1 truncate text-[12px] font-black text-slate-400">
+                Search "decorator, dj, cake vendor"
+              </span>
+              <Mic className="h-5 w-5 shrink-0 text-slate-500" />
             </div>
           </div>
 
-          {/* App Screen Content */}
-          <div className="flex-1 flex flex-col text-left">
-            <div className="flex items-center justify-center gap-1.5 mb-3 select-none">
-              <img
-                src="/logo_1old.png"
-                alt="Party Club App Icon"
-                className="w-5 h-5 object-contain rounded shadow-[0_2px_6px_rgba(104,38,142,0.08)]"
-              />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Party Club App</span>
-            </div>
-            
-            <div className="rounded-xl bg-slate-50 border border-slate-200 p-2 mb-3 flex items-center gap-1.5">
-              <MapPin className="h-3 w-3 text-brand-secondary" />
-              <span className="text-[9px] font-extrabold text-slate-800">Indiranagar, Bangalore</span>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 p-2.5 bg-white shadow-sm flex flex-col justify-between h-[155px] relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/[0.02] to-transparent pointer-events-none" />
-              
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-[7px] font-black text-brand-secondary uppercase tracking-wider block">Home DJ Booking</span>
-                  <h4 className="text-[10px] font-black text-slate-800 mt-0.5">DJ Neon Beats Live</h4>
-                </div>
-                <span className="text-[7.5px] font-black text-amber-500 bg-amber-400/10 px-1 rounded">4.8 ★</span>
-              </div>
-
-              {/* Interactive UI Chat Simulation */}
-              <div className="my-1.5 border-t border-slate-100 pt-1.5 space-y-1">
-                <div className="flex justify-end">
-                  <span className="bg-gradient-to-r from-[#68268e] to-[#ed2891] text-white text-[7.5px] font-semibold py-0.5 px-2 rounded-2xl rounded-tr-none shadow-sm">
-                    Custom Playlist?
-                  </span>
-                </div>
-                <div className="flex justify-start">
-                  <span className="bg-slate-100 text-slate-700 text-[7.5px] font-semibold py-0.5 px-2 rounded-2xl rounded-tl-none">
-                    Absolutely, send tracks!
-                  </span>
+          <div className="flex-1 overflow-hidden bg-white px-4 pb-[58px] pt-5">
+            <div className="relative">
+              <div className="absolute -left-20 top-0 h-[118px] w-20 rounded-r-[22px] bg-slate-950 shadow-lg" />
+              <div className="ml-4 h-[126px] rounded-[24px] bg-[linear-gradient(135deg,rgba(31,41,55,0.05),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center shadow-[0_8px_18px_rgba(15,23,42,0.12)]">
+                <div className="flex h-full flex-col justify-end rounded-[24px] bg-gradient-to-t from-black/55 via-black/10 to-transparent p-4 text-white">
+                  <h4 className="text-xl font-black leading-tight">Wedding & Sangeet</h4>
+                  <p className="mt-1 text-[12px] font-semibold text-white/90">Make Every Event Memorable</p>
                 </div>
               </div>
-
-              <div className="border-t border-dashed border-slate-200 pt-1.5 flex justify-between items-center">
-                <div>
-                  <span className="text-[7px] text-slate-500 block font-bold">UPI Advance Payment</span>
-                  <span className="text-[8.5px] font-black text-emerald-600">₹999 Secured</span>
-                </div>
-                <span className="text-[7.5px] font-bold text-slate-400">1 Slot booked</span>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+                <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+                <span className="h-2.5 w-7 rounded-full bg-[#7b2aa2]" />
               </div>
             </div>
 
-            {/* Mini Features Checklist */}
-            <div className="mt-3 space-y-1.5">
-              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                  <span className="text-[9.5px] font-extrabold text-slate-800">Verified Decorators</span>
+            <div className="mt-6 flex items-center justify-between">
+              <h3 className="text-[19px] font-black leading-none text-black">Explore by Category</h3>
+              <span className="text-[14px] font-black text-slate-500">See All</span>
+            </div>
+
+            <div className="mt-4 grid grid-cols-4 gap-3">
+              {categoryItems.map((item) => (
+                <div key={item.name} className="min-w-0 text-center">
+                  <div
+                    className="mx-auto h-[50px] w-[50px] rounded-[14px] border border-slate-200 bg-cover bg-center shadow-[0_5px_12px_rgba(15,23,42,0.16)]"
+                    style={{ backgroundImage: item.image }}
+                  />
+                  <p className="mt-2 text-[10.5px] font-extrabold leading-tight text-slate-800">
+                    {item.name}
+                  </p>
                 </div>
-                <span className="text-[8px] font-bold text-slate-400">142 active</span>
+              ))}
+            </div>
+
+            <div className="mt-6 flex items-center justify-between">
+              <h3 className="text-[18px] font-black leading-tight text-black">Exclusive Deals & Vendors Nearby</h3>
+              <span className="shrink-0 pl-3 text-[14px] font-black text-slate-500">See All</span>
+            </div>
+
+            <div className="relative mt-4 h-[165px] overflow-hidden rounded-[20px] border border-pink-100 bg-gradient-to-br from-[#d5a15e] via-[#fff0d8] to-[#ffd9dd] shadow-[0_8px_18px_rgba(15,23,42,0.1)]">
+              <div className="absolute inset-0 opacity-35">
+                <div className="absolute left-1/2 top-8 h-28 w-[2px] -translate-x-1/2 rounded-full bg-[#b98543]" />
+                <div className="absolute left-1/2 top-8 h-24 w-10 -translate-x-1/2 rounded-b-full border-2 border-t-0 border-[#b98543]" />
+                <div className="absolute left-[52%] top-5 text-2xl text-[#b98543]">✦</div>
+                <div className="absolute left-[46%] top-16 text-lg text-[#b98543]">✦</div>
               </div>
-              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-rose-500" />
-                  <span className="text-[9.5px] font-extrabold text-slate-800">Schedule Birthday</span>
-                </div>
-                <span className="text-[8px] font-bold text-brand-primary">Select Date</span>
+              <button className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-red-500 shadow-md" aria-label="Add vendor to wishlist">
+                <Heart className="h-5 w-5 fill-current" />
+              </button>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/45 to-transparent p-4">
+                <span className="inline-flex rounded bg-[#d8177c] px-2 py-1 text-[10px] font-black uppercase text-white">
+                  Birthday Decorators
+                </span>
+                <p className="mt-2 text-[13px] font-black text-white">Premium venue styling from local experts</p>
               </div>
             </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 grid h-[54px] grid-cols-5 border-t border-slate-200 bg-white text-slate-500 shadow-[0_-6px_14px_rgba(15,23,42,0.08)]">
+            {[
+              { label: "Home", icon: Home, active: true },
+              { label: "Wishlist", icon: Heart },
+              { label: "Category", icon: Grid2X2 },
+              { label: "Map", icon: MapPinned },
+              { label: "Account", icon: UserRound },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.label}
+                  className={`flex flex-col items-center justify-center gap-0.5 text-[9.5px] font-black ${item.active ? "text-[#d8177c]" : "text-slate-500"}`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{item.label}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -209,7 +281,7 @@ export default function PhoneShowcase() {
           
           {/* Section Header */}
           <div className="max-w-3xl mx-auto mb-12 text-center">
-            <h2 className="text-3xl sm:text-5xl font-black leading-tight mb-4 font-display text-slate-800">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-4 font-display text-slate-800">
               What’s <span className="font-serif italic font-normal text-gradient-pc">waiting for you</span> on the app?
             </h2>
             <p className="text-sm sm:text-lg font-semibold leading-relaxed text-slate-500 max-w-xl mx-auto">
@@ -222,7 +294,7 @@ export default function PhoneShowcase() {
         <div className="w-full relative">
           
           {/* Desktop/Large screen interactive visual showcase area */}
-          <div className="hidden lg:block relative w-full max-w-6xl mx-auto h-[560px] overflow-hidden">
+          <div className="hidden lg:block relative w-full max-w-6xl mx-auto h-[640px] overflow-hidden">
             
             {/* Emerging Phone Mockup */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10">
@@ -287,7 +359,7 @@ export default function PhoneShowcase() {
                 return (
                   <motion.div
                     key={idx}
-                    className="bg-white border border-slate-100 shadow-[0_8px_24px_rgba(104,38,142,0.04)] rounded-[20px] p-3.5 flex items-center gap-3.5 cursor-pointer"
+                    className="bg-white border border-slate-100 shadow-[0_8px_24px_rgba(104,38,142,0.04)] rounded-[16px] p-3.5 flex min-h-20 items-center gap-3.5 cursor-pointer"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -333,7 +405,7 @@ export default function PhoneShowcase() {
           <div 
             onMouseEnter={() => setIsCardHovered(true)}
             onMouseLeave={() => setIsCardHovered(false)}
-            className={`rounded-[48px] p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden text-left transition-all duration-500 border ${
+            className={`rounded-[28px] sm:rounded-[40px] lg:rounded-[48px] p-5 sm:p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-12 relative overflow-hidden text-left transition-all duration-500 border ${
               isCardHovered
                 ? "bg-[#0f051d] border-purple-950/60 shadow-[0_25px_60px_rgba(237,40,145,0.18)]"
                 : "bg-white border-[#f3e8f5] shadow-[0_20px_50px_rgba(104,38,142,0.04)]"
@@ -346,7 +418,7 @@ export default function PhoneShowcase() {
 
             {/* Left Column: Form & App Links */}
             <div className="flex-1 text-center md:text-left flex flex-col items-center md:items-start relative z-10">
-              <h3 className={`text-3xl sm:text-4xl md:text-5xl font-black leading-[1.12] font-display mb-4 tracking-tight transition-colors duration-500 ${
+              <h3 className={`text-3xl sm:text-4xl md:text-5xl font-black leading-[1.12] font-display mb-4 transition-colors duration-500 ${
                 isCardHovered ? "text-white" : "text-slate-800"
               }`}>
                 Get the <span className="font-serif italic font-normal text-gradient-pc">Party Club</span> app
@@ -393,7 +465,7 @@ export default function PhoneShowcase() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     required
-                    className={`flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#68268e] focus:border-transparent text-sm font-semibold shadow-inner transition-all duration-500 ${
+                    className={`flex-1 min-w-0 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#68268e] focus:border-transparent text-sm font-semibold shadow-inner transition-all duration-500 ${
                       isCardHovered 
                         ? "bg-[#180a29] border-purple-900/40 text-white focus:ring-[#ed2891]" 
                         : "bg-white border-slate-200 text-slate-800"
@@ -401,7 +473,7 @@ export default function PhoneShowcase() {
                   />
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#68268e] to-[#ed2891] hover:opacity-95 text-white font-extrabold text-sm transition shadow-md active:scale-95 flex items-center justify-center min-w-[140px]"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#68268e] to-[#ed2891] hover:opacity-95 text-white font-extrabold text-sm transition shadow-md active:scale-95 flex min-h-11 items-center justify-center min-w-[140px]"
                   >
                     {isSubmitted ? "Link Sent! ✓" : "Share App Link"}
                   </button>
@@ -448,7 +520,7 @@ export default function PhoneShowcase() {
             <div className="flex-shrink-0 w-full md:w-auto flex justify-center relative z-10">
               
               <div
-                className="relative w-[290px] h-[370px] bg-black rounded-t-[44px] p-3 shadow-[0_20px_50px_rgba(104,38,142,0.1)] border-4 border-b-0 border-slate-850 flex flex-col overflow-hidden"
+                className="relative w-[min(290px,calc(100vw-64px))] h-[370px] bg-black rounded-t-[44px] p-3 shadow-[0_20px_50px_rgba(104,38,142,0.1)] border-4 border-b-0 border-slate-850 flex flex-col overflow-hidden"
               >
                 {/* iPhone Notch */}
                 <div className="absolute top-4.5 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-30" />

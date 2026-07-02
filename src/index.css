@@ -1,17 +1,45 @@
 @import "tailwindcss";
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
   html, body {
     transition: background-color 800ms cubic-bezier(0.4, 0, 0.2, 1), color 800ms cubic-bezier(0.4, 0, 0.2, 1);
     font-family: 'Manrope', sans-serif;
     background-color: #ffffff;
     color: #1c1c1c;
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  img, svg, video, canvas {
+    max-width: 100%;
   }
   
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Sora', sans-serif;
     color: #1c1c1c;
     transition: color 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  a, button, input, label {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, [role="button"], a {
+    touch-action: manipulation;
   }
   
   /* Class-based dark overrides for base colors */
@@ -132,5 +160,4 @@
 .dark .glow-pink {
   box-shadow: 0 0 35px rgba(237, 40, 145, 0.4);
 }
-
 

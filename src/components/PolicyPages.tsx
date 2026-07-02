@@ -310,29 +310,29 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
 
       {/* Light Theme Persistent Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/60 py-4 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-3">
           <button 
             onClick={() => onNavigate("home")} 
-            className="flex items-center gap-2 group text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 cursor-pointer select-none transition"
+            className="flex min-h-11 items-center gap-2 group text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 cursor-pointer select-none transition"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            <span>Back to Home</span>
+            <span className="hidden min-[360px]:inline">Back to Home</span>
           </button>
 
           {/* Logo Center */}
-          <button onClick={() => onNavigate("home")} className="flex items-center gap-2 group select-none cursor-pointer">
+          <button onClick={() => onNavigate("home")} className="flex min-h-11 items-center gap-2 group select-none cursor-pointer">
             <img
               src="/logo_1.png"
               alt="Party Club India logo"
               className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="text-lg font-black tracking-tight text-slate-900">
+            <span className="text-base sm:text-lg font-black tracking-tight text-slate-900">
               party club
             </span>
           </button>
 
           {/* Location / Status placeholder */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200/80 rounded-lg text-[10px] font-extrabold text-slate-500">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200/80 rounded-lg text-[10px] font-extrabold text-slate-500">
             <span>Delhi NCR</span>
           </div>
         </div>
@@ -342,7 +342,7 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
       <main className="flex-1 max-w-4xl mx-auto px-4 py-8 md:py-12 w-full relative z-10">
         
         {/* Page Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-6 md:mb-8 font-semibold">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-400 mb-6 md:mb-8 font-semibold">
           <span className="hover:text-slate-600 cursor-pointer" onClick={() => onNavigate("home")}>Home</span>
           <ChevronRight className="h-3.5 w-3.5 text-slate-300" />
           <span className="text-[#ed2891]">{currentPolicy.title}</span>
@@ -355,7 +355,7 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -15 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
-          className="bg-white border border-slate-200/70 rounded-2xl p-6 md:p-12 shadow-soft relative"
+          className="bg-white border border-slate-200/70 rounded-2xl p-5 sm:p-6 md:p-12 shadow-soft relative"
         >
           {/* Card Top Border Highlight */}
           <div className="absolute top-0 left-10 right-10 h-[2px] bg-gradient-to-r from-transparent via-[#ed2891]/40 to-transparent" />
@@ -363,7 +363,7 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
           {/* Title & Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 mb-8">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-[#68268e]/5 to-[#ed2891]/10 rounded-xl border border-purple-100 text-[#ed2891]">
+              <div className="p-3 bg-gradient-to-br from-[#68268e]/5 to-[#ed2891]/10 rounded-xl border border-purple-100 text-[#ed2891] shrink-0">
                 <IconComponent className="h-6 w-6" />
               </div>
               <div>
@@ -389,7 +389,7 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
 
           {/* Action signature footer */}
           <div className="mt-12 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-slate-400 font-semibold">
-            <p>For questions or data deletion requests, contact us at <a href="mailto:support@partyclub.in" className="text-[#ed2891] hover:underline font-bold">support@partyclub.in</a></p>
+            <p>For questions or data deletion requests, contact us at <a href="mailto:support@partyclubindia.com" className="text-[#ed2891] hover:underline font-bold">support@partyclubindia.com</a></p>
             <p>© Party Club India. All rights reserved.</p>
           </div>
         </motion.div>

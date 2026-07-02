@@ -13,7 +13,7 @@ export default function Footer() {
           <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
         </svg>
       ),
-      href: "#"
+      href: "https://www.instagram.com/partyclubindia"
     },
     {
       name: "Facebook",
@@ -22,7 +22,7 @@ export default function Footer() {
           <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
         </svg>
       ),
-      href: "#"
+      href: "https://www.facebook.com/partyclubindia"
     },
     {
       name: "YouTube",
@@ -45,15 +45,12 @@ export default function Footer() {
         {/* Top Footer Bar (Logo + Dropdowns) */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-12 border-b border-slate-800 mb-12">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2.5 group select-none">
+          <a href="/" className="flex items-center gap-2.5 group select-none">
             <img
               src="/logo_1.png"
               alt="Party Club India logo"
               className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="text-2xl font-black tracking-tight text-white">
-              party club
-            </span>
           </a>
 
           {/* Country/Language select tools */}
@@ -143,6 +140,8 @@ export default function Footer() {
                   <a
                     key={item.name}
                     href={item.href}
+                    target={item.href.startsWith("http") ? "_blank" : undefined}
+                    rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
                     className="p-2 rounded-full bg-slate-900 border border-slate-800 text-white hover:bg-brand-primary hover:border-[#ff9cd2] transition flex items-center justify-center"
                     aria-label={`Follow us on ${item.name}`}
                   >

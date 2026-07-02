@@ -53,7 +53,7 @@ export default function BrandShowcase() {
   return (
     <section 
       id="brand-showcase-section"
-      className="relative py-24 bg-[#fffcfd] overflow-hidden w-full flex flex-col items-center justify-center min-h-[580px]"
+      className="relative py-16 sm:py-20 lg:py-24 bg-[#fffcfd] overflow-hidden w-full flex flex-col items-center justify-center min-h-[580px]"
     >
       
       {/* 1. Animated Curved Lines in the Background (Position translated gently for smooth waves) */}
@@ -102,7 +102,7 @@ export default function BrandShowcase() {
       
       {/* A. Disco Ball (Top Left) */}
       <motion.div
-        className="absolute top-[12%] left-[4%] md:left-[12%] w-20 h-20 md:w-28 md:h-28 z-10 pointer-events-none select-none"
+        className="absolute top-[8%] left-[1%] md:left-[12%] w-14 h-14 sm:w-20 sm:h-20 md:w-28 md:h-28 z-10 pointer-events-none select-none opacity-70 sm:opacity-100"
         animate={{ y: [0, -12, 0], rotate: 360 }}
         transition={{
           y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
@@ -134,7 +134,7 @@ export default function BrandShowcase() {
 
       {/* B. Helium Balloons (Top Right) */}
       <motion.div
-        className="absolute top-[10%] right-[4%] md:right-[12%] w-24 h-24 md:w-32 md:h-32 z-10 pointer-events-none select-none"
+        className="absolute top-[7%] right-[1%] md:right-[12%] w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 z-10 pointer-events-none select-none opacity-70 sm:opacity-100"
         animate={{ y: [0, -16, 0], x: [0, 8, 0], rotate: [-2, 2, -2] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -168,7 +168,7 @@ export default function BrandShowcase() {
 
       {/* C. Cocktail Glass (Bottom Left) */}
       <motion.div
-        className="absolute bottom-[16%] left-[3%] md:left-[10%] w-20 h-20 md:w-28 md:h-28 z-10 pointer-events-none select-none"
+        className="absolute bottom-[10%] left-[1%] md:left-[10%] w-14 h-14 sm:w-20 sm:h-20 md:w-28 md:h-28 z-10 pointer-events-none select-none opacity-60 sm:opacity-100"
         animate={{ y: [0, -12, 0], rotate: [0, 4, 0] }}
         transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
       >
@@ -195,7 +195,7 @@ export default function BrandShowcase() {
 
       {/* D. Party Popper (Bottom Right) */}
       <motion.div
-        className="absolute bottom-[14%] right-[3%] md:right-[10%] w-24 h-24 md:w-32 md:h-32 z-10 pointer-events-none select-none"
+        className="absolute bottom-[8%] right-[1%] md:right-[10%] w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 z-10 pointer-events-none select-none opacity-60 sm:opacity-100"
         animate={{ y: [0, -10, 0], rotate: [0, -4, 0] }}
         transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
       >
@@ -251,7 +251,7 @@ export default function BrandShowcase() {
       <div className="max-w-6xl mx-auto px-4 w-full flex flex-col items-center justify-between z-10 relative">
         
         {/* Core texts */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -265,7 +265,7 @@ export default function BrandShowcase() {
               className="h-16 w-16 sm:h-20 sm:w-20 object-contain rounded-2xl shadow-[0_10px_25px_rgba(104,38,142,0.12)] border border-purple-100"
             />
           </motion.div>
-          <h2 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight text-slate-800 font-display">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight text-slate-800 font-display">
             Better parties for <span className="font-serif italic font-normal text-gradient-pc">more people</span>
           </h2>
           <p className="text-slate-500 text-sm sm:text-base md:text-lg font-semibold mt-5 leading-relaxed max-w-xl mx-auto">
@@ -274,10 +274,10 @@ export default function BrandShowcase() {
         </div>
 
         {/* 4. Statistics Pill Bar (Zomato-style stats pill layout) */}
-        <div className="bg-white border border-[#f3e8f5] shadow-[0_20px_50px_rgba(104,38,142,0.05)] rounded-[32px] md:rounded-full px-8 py-7 max-w-4xl w-full flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 transition-transform duration-300 hover:scale-[1.01] hover:shadow-[0_25px_60px_rgba(104,38,142,0.08)] animate-fade-in">
+        <div className="bg-white border border-[#f3e8f5] shadow-[0_20px_50px_rgba(104,38,142,0.05)] rounded-[28px] md:rounded-full px-5 sm:px-8 py-6 sm:py-7 max-w-4xl w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-5 md:gap-0 transition-transform duration-300 hover:scale-[1.01] hover:shadow-[0_25px_60px_rgba(104,38,142,0.08)] animate-fade-in">
           
           {/* Stat 1 */}
-          <div className="flex-1 flex items-center justify-center gap-5 w-full md:w-auto">
+          <div className="flex-1 flex items-center justify-between sm:justify-center gap-4 sm:gap-5 w-full md:w-auto">
             <div className="text-center md:text-left">
               <span className="block text-3xl font-black text-slate-800 tracking-tight">
                 <CountUp target={50000} suffix="+" />
@@ -293,7 +293,7 @@ export default function BrandShowcase() {
           <div className="hidden md:block h-10 w-[1px] bg-slate-200" />
 
           {/* Stat 2 */}
-          <div className="flex-1 flex items-center justify-center gap-5 w-full md:w-auto">
+          <div className="flex-1 flex items-center justify-between sm:justify-center gap-4 sm:gap-5 w-full md:w-auto">
             <div className="text-center md:text-left">
               <span className="block text-3xl font-black text-slate-800 tracking-tight">
                 <CountUp target={100} suffix="+" />
@@ -309,7 +309,7 @@ export default function BrandShowcase() {
           <div className="hidden md:block h-10 w-[1px] bg-slate-200" />
 
           {/* Stat 3 */}
-          <div className="flex-1 flex items-center justify-center gap-5 w-full md:w-auto">
+          <div className="flex-1 flex items-center justify-between sm:justify-center gap-4 sm:gap-5 w-full md:w-auto">
             <div className="text-center md:text-left">
               <span className="block text-3xl font-black text-slate-800 tracking-tight">
                 <CountUp target={10000} suffix="+" />

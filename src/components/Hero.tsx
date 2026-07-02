@@ -23,11 +23,11 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/45 z-0" />
 
         {/* Ambient Glow Blobs */}
-        <div className="absolute top-[10%] left-[10%] w-[380px] h-[380px] rounded-full bg-brand-primary/15 blur-[120px] pointer-events-none z-0 animate-pulse" />
-        <div className="absolute bottom-[10%] right-[10%] w-[320px] h-[320px] rounded-full bg-brand-secondary/15 blur-[110px] pointer-events-none z-0 animate-pulse" />
+        <div className="absolute top-[10%] left-[10%] w-[240px] h-[240px] sm:w-[380px] sm:h-[380px] rounded-full bg-brand-primary/15 blur-[90px] sm:blur-[120px] pointer-events-none z-0 animate-pulse" />
+        <div className="absolute bottom-[10%] right-[10%] w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-full bg-brand-secondary/15 blur-[85px] sm:blur-[110px] pointer-events-none z-0 animate-pulse" />
 
         {/* Splash Content Container */}
-        <div className="max-w-4xl mx-auto px-4 w-full text-center relative z-10 flex flex-col items-center pb-20">
+        <div className="max-w-4xl mx-auto px-4 w-full text-center relative z-10 flex flex-col items-center pb-20 pt-8">
           
           {/* Logo */}
           <motion.div
@@ -39,7 +39,7 @@ export default function Hero() {
             <img
               src="/logo_1.png"
               alt="Party Club Logo"
-              className="h-28 sm:h-32 md:h-36 w-auto object-contain filter drop-shadow-[0_8px_32px_rgba(237,40,145,0.35)]"
+              className="h-24 min-[360px]:h-28 sm:h-32 md:h-36 w-auto object-contain filter drop-shadow-[0_8px_32px_rgba(237,40,145,0.35)]"
             />
           </motion.div>
 
@@ -48,7 +48,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 80, damping: 14, delay: 0.1 }}
-            className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-[1.12] max-w-3xl mb-4 tracking-tight font-display"
+            className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-[1.12] max-w-3xl mb-4 font-display"
           >
             Plan Your <span className="font-serif italic font-normal text-gradient-pc">Perfect Party</span> in Minutes
           </motion.h1>
@@ -74,7 +74,7 @@ export default function Hero() {
               href="#ios" 
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="block w-40 border border-white/20 rounded-xl p-1 bg-black/85 backdrop-blur hover:border-brand-secondary/50 transition duration-300"
+              className="block w-40 min-h-12 p-1 bg-black/85 backdrop-blur hover:border-brand-secondary/50 transition duration-300"
             >
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on App Store" className="w-full h-auto" />
             </motion.a>
@@ -82,7 +82,7 @@ export default function Hero() {
               href="#android" 
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="block w-40 border border-white/20 rounded-xl p-1 bg-black/85 backdrop-blur hover:border-brand-secondary/50 transition duration-300"
+              className="block w-40 min-h-12 p-1 bg-black/85 backdrop-blur hover:border-brand-secondary/50 transition duration-300"
             >
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="w-full h-auto" />
             </motion.a>
@@ -93,7 +93,15 @@ export default function Hero() {
         {/* Scroll Down caret positioned relative to Section bottom edge */}
         <div
           onClick={() => document.getElementById("brand-showcase-section")?.scrollIntoView({ behavior: "smooth" })}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-slate-300 text-[10px] font-black uppercase tracking-widest animate-bounce cursor-pointer select-none z-20 hover:text-white transition"
+          className="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex min-h-11 flex-col items-center justify-center gap-1.5 text-slate-300 text-[10px] font-black uppercase tracking-widest animate-bounce cursor-pointer select-none z-20 hover:text-white transition"
+          role="button"
+          tabIndex={0}
+          aria-label="Scroll to party stats"
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              document.getElementById("brand-showcase-section")?.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
         >
           <span>Scroll down</span>
           <ChevronDown className="h-4.5 w-4.5" />

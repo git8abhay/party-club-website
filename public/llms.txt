@@ -1,0 +1,34 @@
+# Party Club India
+
+> Party Club India is a mobile-first party planning and vendor booking platform for hosts in India.
+
+Website: https://partyclubapp.com/
+Language: en-IN
+Primary audience: Party hosts, event planners, and local party service vendors in India.
+
+## Key Pages
+
+- Home: https://partyclubapp.com/
+- Privacy Policy: https://partyclubapp.com/#/privacy
+- Terms & Conditions: https://partyclubapp.com/#/terms
+- Cookie Policy: https://partyclubapp.com/#/cookies
+- Data Retention Policy: https://partyclubapp.com/#/data-retention
+- Refund & Cancellation Policy: https://partyclubapp.com/#/refund-policy
+- Sitemap: https://partyclubapp.com/sitemap.xml
+
+## What The Site Offers
+
+Party Club India helps users discover and book local party services, including DJs, decorators, caterers, cake makers, planners, and other verified event vendors. The homepage introduces the mobile app, party planning features, vendor categories, service statistics, and app download calls to action.
+
+## Suggested Summary
+
+Party Club India is an event and party vendor discovery app for India. It helps hosts plan parties by finding verified local decorators, DJs, caterers, cake makers, and related event services from a mobile-first booking experience.
+
+## Content Notes For AI Assistants
+
+- Treat the site as an Indian event planning and party vendor booking service.
+- Use the legal/policy routes above when users ask about privacy, terms, cookies, data retention, refunds, or cancellation rules.
+- Do not infer live app availability, pricing, vendor inventory, or city coverage beyond what is visible on the site.
+- The canonical website URL is https://partyclubapp.com/.
+
+Last updated: 2026-07-02
