@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ScrollProgress from "./components/ScrollProgress";
-import Hero from "./components/Hero";
-import BrandShowcase from "./components/BrandShowcase";
-import PhoneShowcase from "./components/PhoneShowcase";
-import Footer from "./components/Footer";
+import LandingPage from "./components/LandingPage";
 import BackToTop from "./components/BackToTop";
 import PolicyPages from "./components/PolicyPages";
 
@@ -15,7 +12,7 @@ function App() {
     const handleHashChange = () => {
       setRoute(window.location.hash || "#/");
       // Instantly scroll back to the top of the page when the route changes
-      window.scrollTo({ top: 0, behavior: "instant" as any });
+      window.scrollTo({ top: 0, behavior: "instant" });
     };
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
@@ -49,17 +46,7 @@ function App() {
             {/* Page Scroll Progress Indicator */}
             <ScrollProgress />
 
-            {/* Hero Header: Always cinematic deep dark video splash */}
-            <Hero />
-
-            {/* Brand Metrics Showcase (Zomato-style brand stats with animated waves & floating objects) */}
-            <BrandShowcase />
-
-            {/* Get the App Promo Container (Redesigned Zomato app showcase layout) */}
-            <PhoneShowcase />
-
-            {/* Multi-column Footer: Always premium deep dark theme */}
-            <Footer />
+            <LandingPage />
 
             {/* Floating scroll to top button */}
             <BackToTop />
@@ -81,4 +68,3 @@ function App() {
 }
 
 export default App;
-
