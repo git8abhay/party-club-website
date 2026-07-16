@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../constants/appLinks";
 import {
   Bell,
   Cake,
@@ -490,7 +491,9 @@ export default function PhoneShowcase() {
               {/* Stores download badges */}
               <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
                 <a
-                  href="#android"
+                  href={PLAY_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`block w-40 border rounded-xl p-1 bg-black transition shadow-sm cursor-pointer ${
                     isCardHovered ? "border-purple-900/60 hover:border-[#ed2891]/60" : "border-slate-200 hover:border-[#ed2891]/40"
                   }`}
@@ -502,7 +505,9 @@ export default function PhoneShowcase() {
                   />
                 </a>
                 <a
-                  href="#ios"
+                  href={APP_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`block w-40 border rounded-xl p-1 bg-black transition shadow-sm cursor-pointer ${
                     isCardHovered ? "border-purple-900/60 hover:border-[#ed2891]/60" : "border-slate-200 hover:border-[#ed2891]/40"
                   }`}

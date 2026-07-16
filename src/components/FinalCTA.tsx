@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Sparkles, Compass } from "lucide-react";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../constants/appLinks";
 
 export default function FinalCTA() {
   return (
@@ -42,7 +43,9 @@ export default function FinalCTA() {
           
           {/* iOS App Store Button */}
           <motion.a
-            href="#ios"
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.98 }}
             className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-black border border-white/10 hover:border-brand-secondary/40 transition duration-300 shadow-xl cursor-pointer w-48 text-left group"
@@ -59,7 +62,9 @@ export default function FinalCTA() {
 
           {/* Android Play Store Button */}
           <motion.a
-            href="#android"
+            href={PLAY_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.98 }}
             className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-black border border-white/10 hover:border-brand-secondary/40 transition duration-300 shadow-xl cursor-pointer w-48 text-left group"

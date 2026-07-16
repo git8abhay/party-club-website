@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../constants/appLinks";
 
 export default function Hero() {
 
@@ -71,7 +72,9 @@ export default function Hero() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <motion.a 
-              href="#ios" 
+              href={APP_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               className="block w-40 min-h-12 p-1 bg-black/85 backdrop-blur hover:border-brand-secondary/50 transition duration-300"
@@ -79,7 +82,9 @@ export default function Hero() {
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on App Store" className="w-full h-auto" />
             </motion.a>
             <motion.a 
-              href="#android" 
+              href={PLAY_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               className="block w-40 min-h-12 p-1 bg-black/85 backdrop-blur hover:border-brand-secondary/50 transition duration-300"

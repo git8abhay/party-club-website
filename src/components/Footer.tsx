@@ -1,4 +1,5 @@
 import { ArrowUpRight, Globe } from "lucide-react";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../constants/appLinks";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -153,10 +154,10 @@ export default function Footer() {
             
             {/* App Store download badges */}
             <div className="flex flex-col gap-2.5 max-w-[130px]">
-              <a href="#ios" className="block w-full border border-slate-800 rounded-lg p-1 bg-black hover:border-slate-700 transition">
+              <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className="block w-full border border-slate-800 rounded-lg p-1 bg-black hover:border-slate-700 transition">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on App Store" className="w-full h-auto" />
               </a>
-              <a href="#android" className="block w-full border border-slate-800 rounded-lg p-1 bg-black hover:border-slate-700 transition">
+              <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" className="block w-full border border-slate-800 rounded-lg p-1 bg-black hover:border-slate-700 transition">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="w-full h-auto" />
               </a>
             </div>
