@@ -6,31 +6,35 @@ import BackToTop from "./components/BackToTop";
 import PolicyPages from "./components/PolicyPages";
 
 function App() {
-  const [route, setRoute] = useState<string>(window.location.hash || "#/");
+  const legacyHashRoute = window.location.hash.startsWith("#/")
+    ? window.location.hash.slice(1)
+    : null;
+  const [route, setRoute] = useState<string>(legacyHashRoute || window.location.pathname);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setRoute(window.location.hash || "#/");
-      // Instantly scroll back to the top of the page when the route changes
+    if (legacyHashRoute) {
+      window.history.replaceState({}, "", legacyHashRoute);
+    }
+
+    const handlePopState = () => {
+      setRoute(window.location.pathname);
       window.scrollTo({ top: 0, behavior: "instant" });
     };
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [legacyHashRoute]);
 
-  const navigateTo = (newHash: string) => {
-    window.location.hash = newHash === "home" ? "#/" : `#/${newHash}`;
+  const navigateTo = (destination: string) => {
+    const path = destination === "home" ? "/" : `/${destination}`;
+    window.history.pushState({}, "", path);
+    setRoute(path);
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
-  // Determine if it is a policy route
-  const isPolicyRoute = 
-    route.startsWith("#/privacy") || 
-    route.startsWith("#/terms") || 
-    route.startsWith("#/cookies") || 
-    route.startsWith("#/data-retention") || 
-    route.startsWith("#/refund-policy");
-
-  const activePolicy = route.replace("#/", "");
+  const normalizedRoute = route.replace(/\/$/, "") || "/";
+  const policyRoutes = ["/privacy", "/terms", "/cookies", "/data-deletion", "/data-retention", "/refund-policy"];
+  const isPolicyRoute = policyRoutes.includes(normalizedRoute);
+  const activePolicy = normalizedRoute.slice(1);
 
   return (
     <div className="relative min-h-screen bg-white text-slate-800">

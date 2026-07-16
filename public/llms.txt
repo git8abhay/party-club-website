@@ -9,11 +9,12 @@ Primary audience: Party hosts, event planners, and local party service vendors i
 ## Key Pages
 
 - Home: https://partyclubapp.com/
-- Privacy Policy: https://partyclubapp.com/#/privacy
-- Terms & Conditions: https://partyclubapp.com/#/terms
-- Cookie Policy: https://partyclubapp.com/#/cookies
-- Data Retention Policy: https://partyclubapp.com/#/data-retention
-- Refund & Cancellation Policy: https://partyclubapp.com/#/refund-policy
+- Privacy Policy: https://partyclubapp.com/privacy
+- Terms & Conditions: https://partyclubapp.com/terms
+- Cookie Policy: https://partyclubapp.com/cookies
+- User Data Deletion: https://partyclubapp.com/data-deletion
+- Data Retention Policy: https://partyclubapp.com/data-retention
+- Refund & Cancellation Policy: https://partyclubapp.com/refund-policy
 - Sitemap: https://partyclubapp.com/sitemap.xml
 
 ## What The Site Offers

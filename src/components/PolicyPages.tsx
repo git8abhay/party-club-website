@@ -198,6 +198,58 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
       )
     },
     {
+      id: "data-deletion",
+      title: "User Data Deletion",
+      icon: Database,
+      description: "Instructions for deleting your PartyClub account and associated personal data",
+      content: (
+        <div className="space-y-6">
+          <section>
+            <h3 className="text-lg font-bold text-slate-900 mb-2 font-display">Delete your PartyClub data</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              You can request deletion of your PartyClub account and the personal data associated with it at any time. This applies whether you created your account using a phone number, email address, Facebook Login, or another supported sign-in method.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-slate-900 mb-3 font-display">Option 1: Delete from the PartyClub app</h3>
+            <ol className="space-y-3 text-slate-600 text-sm pl-4 list-decimal list-inside">
+              <li>Open PartyClub and sign in to the account you want to delete.</li>
+              <li>Open your profile and go to account settings.</li>
+              <li>Select the account deletion option and follow the confirmation steps.</li>
+            </ol>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-slate-900 mb-3 font-display">Option 2: Request deletion by email</h3>
+            <p className="text-slate-600 text-sm leading-relaxed mb-3">
+              If you cannot access the app, email us from the address associated with your PartyClub account.
+            </p>
+            <a href="mailto:support@partyclubindia.com?subject=PartyClub%20User%20Data%20Deletion%20Request" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#ed2891] px-5 py-3 text-sm font-bold text-white hover:bg-[#d91e80] transition">
+              Email a deletion request
+            </a>
+            <p className="text-slate-500 text-xs leading-relaxed mt-3">
+              Use the subject “PartyClub User Data Deletion Request” and include the name, email address or mobile number associated with the account. Do not send your password, OTP, payment details, or identity documents by email.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-slate-900 mb-2 font-display">Verification and completion</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              To protect your account, we may ask you to verify ownership using the registered email address or mobile number. After verification, we will delete or anonymize the account and associated personal data within 30 days. Information that must be retained for fraud prevention, security, legal, tax, accounting, or dispute-resolution obligations may be retained only for the required period and then deleted or anonymized.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-slate-900 mb-2 font-display">Facebook Login users</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Removing PartyClub from your Facebook Apps and Websites settings stops future Facebook access but may not delete information already held by PartyClub. Complete one of the deletion methods above to request deletion of your PartyClub data.
+            </p>
+          </section>
+        </div>
+      )
+    },
+    {
       id: "data-retention",
       title: "Data Retention Policy",
       icon: Database,
