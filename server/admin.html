@@ -1,8 +1,22 @@
 <main id="main" class="admin">
   <div class="admin-heading"><div><span class="eyebrow">PartyClub CMS</span><h1>Admin portal</h1><p>Create something worth celebrating.</p></div><button id="logout" hidden>Sign out</button></div>
   <p id="message" role="status" aria-live="polite"></p>
-  <form id="login" class="panel login"><h2>Welcome back</h2><p>Sign in to manage your blog and email settings.</p><label>Admin password<input name="password" type="password" autocomplete="current-password" required maxlength="1000"></label><button class="button" type="submit">Sign in</button></form>
+  <form id="login" class="panel login"><h2>Welcome back</h2><p>Sign in to manage your blog and email settings.</p><label>Username or email<input name="identifier" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="254"></label><label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label><button class="button" type="submit">Sign in</button></form>
   <section id="workspace" hidden>
+    <p id="signed-in-user" class="muted"></p>
+    <details class="panel" id="my-account"><summary>My account · Change password</summary>
+      <form id="password-form"><label>Current password<input name="currentPassword" type="password" autocomplete="current-password" required maxlength="128"></label><label>New password<input name="newPassword" type="password" autocomplete="new-password" required minlength="12" maxlength="128"><small>Use at least 12 characters.</small></label><label>Confirm new password<input name="confirmPassword" type="password" autocomplete="new-password" required minlength="12" maxlength="128"></label><button class="button" type="submit">Change password</button></form><p id="password-status" role="status"></p>
+    </details>
+    <details class="panel" id="users-panel" hidden><summary>Team accounts</summary><p>Administrators manage team accounts and SMTP settings. Editors manage blog articles.</p>
+      <button id="new-user" type="button" class="button">Add account</button><button id="reload-users" type="button">Refresh accounts</button><div id="users-list" class="post-list"></div>
+      <form id="user-form" hidden><h2 id="user-form-title">Add account</h2>
+        <div class="field-pair"><label>Full name<input name="name" required maxlength="100" autocomplete="off"></label><label>Username<input name="username" required minlength="3" maxlength="64" autocomplete="off" autocapitalize="none" spellcheck="false"></label></div>
+        <label>Email address<input name="email" type="email" required maxlength="254" autocomplete="off"></label>
+        <label>Password<input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password"><small>At least 12 characters. When editing, leave blank to keep the existing password.</small></label>
+        <div class="field-pair"><label>Role<select name="role"><option value="editor">Editor</option><option value="admin">Administrator</option></select></label><label>Status<select name="active"><option value="true">Active</option><option value="false">Disabled</option></select></label></div>
+        <button class="button" type="submit">Save account</button><button id="cancel-user" type="button">Cancel</button>
+      </form><p id="users-status" role="status"></p>
+    </details>
     <details class="panel smtp-panel" id="smtp-panel">
       <summary>SMTP settings <span class="muted">Partner enquiry emails</span></summary>
       <p>Configure the email account used to send partner enquiries to <strong>support@partyclubapp.com</strong>.</p>

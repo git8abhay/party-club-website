@@ -14,13 +14,15 @@ Open http://127.0.0.1:5173, `/blog` for articles, and `/admin` for the CMS. `npm
 Configure the administrator once (or reset the password) in zsh:
 
 ```sh
-read -s 'BLOG_ADMIN_PASSWORD?New admin password (at least 14 characters): '
+export BLOG_ADMIN_USERNAME=admin
+export BLOG_ADMIN_EMAIL=support@partyclubapp.com
+read -s 'BLOG_ADMIN_PASSWORD?New admin password (at least 12 characters): '
 export BLOG_ADMIN_PASSWORD
 npm run blog:setup
 unset BLOG_ADMIN_PASSWORD
 ```
 
-The password is stored as a salted scrypt hash. Resetting it signs out existing sessions. If a local `data/admin-login.txt` was generated during setup, it contains the initial local credentials; it is ignored by Git and must never be deployed.
+The password is stored as a salted scrypt hash. Resetting an account signs out that account’s sessions. Set BLOG_ADMIN_RESET=true explicitly when intentionally resetting an existing username. If a local `data/admin-login.txt` was generated during setup, it contains the initial local credentials; it is ignored by Git and must never be deployed.
 
 ## Writing articles
 
@@ -31,7 +33,7 @@ The password is stored as a salted scrypt hash. Resetting it signs out existing 
 5. Save as **Draft**, then open **Preview saved article**. Preview shows the last saved version and requires login.
 6. Select **Published** and save to publish. Change back to **Draft** and save to unpublish. Deletion is permanent and requires confirmation.
 
-Published slugs are fixed to preserve links. Draft URLs return 404 to the public. Publishing changes are immediately visible without a rebuild. Posts persist across server restarts and deployments. Concurrent edits are rejected if another tab saved a newer version. This is a single-administrator CMS with image URLs, not file uploads or a media library.
+Published slugs are fixed to preserve links. Draft URLs return 404 to the public. Publishing changes are immediately visible without a rebuild. Posts persist across server restarts and deployments. Concurrent edits are rejected if another tab saved a newer version. Administrators can manage individual team accounts. Editors can manage articles but cannot access team accounts or SMTP settings. Images use URLs; there is no media upload library.
 
 ## SEO
 
@@ -101,3 +103,16 @@ Sign in at `/admin` and expand **SMTP settings**. Choose port 587 (STARTTLS) or 
 **Check saved connection** checks the saved server connection and authentication without sending an email. Save edits before checking. A successful check does not prove that the sender is authorized or that email reaches the inbox; submit a partner enquiry to check actual delivery. Connection failures preserve saved settings so they can be corrected.
 
 Admin settings persist in SQLite and apply to the next submission without a restart. SMTP passwords are encrypted using AES-256-GCM and never returned through the settings API. The encryption key is generated on first save as `smtp-settings.key` next to the SQLite database, with owner-only file permissions. Back up both the database and this key securely outside the public web root; losing the key requires re-entering the SMTP password. Neither should be included in source control or static deployments. Authenticated settings writes and connection checks use the existing session, origin and CSRF protections.
+
+## Team accounts
+
+Sign in at `/admin` with your **username or email and password**. Identifiers are case-insensitive. There is no public registration: an administrator opens **Team accounts → Add account** to create a person’s name, username, email, initial password and role.
+
+- **Administrator:** articles, SMTP settings and team accounts.
+- **Editor:** articles and their own password only.
+- **My account → Change password:** requires the current password, then signs that account out on all devices.
+- **Edit account:** update details or role, disable access, or set a replacement password. A blank password retains the existing one. Disabling, resetting the password or changing roles invalidates that account’s sessions. The last active administrator cannot be disabled/demoted; administrators cannot disable or demote themselves.
+
+Passwords are salted scrypt hashes; no password is returned by the account API. Existing articles and SMTP settings remain in the same database. The schema migration invalidates legacy shared sessions. Run `blog:setup` with the first owner’s username, email and password to initialize a named account; this removes the old shared-password setting. Do not run setup with a reset flag during routine deployments.
+
+If you forget a password, another administrator can reset it in Team accounts. If the only administrator loses access, run `blog:setup` on the server with `BLOG_ADMIN_RESET=true`, the existing username/email and a new password. Email-based password recovery is not implemented.

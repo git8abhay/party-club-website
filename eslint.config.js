@@ -13,7 +13,7 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
   {
-    files: ['server/admin.js', 'server/partner.js'],
+    files: ['server/admin.js', 'server/partner.js', 'server/accounts.js'],
     extends: [js.configs.recommended],
     languageOptions: { globals: globals.browser },
   },

@@ -1,6 +1,8 @@
+import { setupAccounts } from './accounts.js';
 const $ = id => document.getElementById(id);
 const form = $('editor');
 let smtpDirty = false, smtpVersion = '';
+let currentUser = null;
 let csrf = '', posts = [], current = null, dirty = false, busy = false;
 const field = name => form.elements.namedItem(name);
 const notice = (text, error = false) => { $('message').textContent = text; $('message').className = error ? 'error' : 'success'; };
@@ -10,7 +12,7 @@ async function api(path, method = 'GET', data) {
   if (!response.ok) throw new Error(result.error || 'Request failed. Please try again.');
   return result;
 }
-function showWorkspace(show) { $('login').hidden = show; $('workspace').hidden = !show; $('logout').hidden = !show; if (show) void loadSmtp(); else { $('smtp-form').reset(); $('smtp-fields').disabled = true; smtpDirty = false; smtpVersion = ''; $('smtp-panel').open = false; $('smtp-status').textContent = ''; } }
+function showWorkspace(show) { $('login').hidden = show; $('workspace').hidden = !show; $('logout').hidden = !show; accountControls.show(show ? currentUser : null); $('smtp-panel').hidden = !show || currentUser?.role !== 'admin'; if (show && currentUser?.role === 'admin') void loadSmtp(); else { $('smtp-form').reset(); $('smtp-fields').disabled = true; smtpDirty = false; smtpVersion = ''; $('smtp-panel').open = false; $('smtp-status').textContent = ''; } }
 async function refresh() {
   posts = await api('/posts');
   $('count').textContent = `(${posts.length})`;
@@ -66,7 +68,7 @@ form.onsubmit = async event => {
 };
 $('login').onsubmit = async event => {
   event.preventDefault(); const button = $('login').querySelector('button'); button.disabled = true;
-  try { const data = await api('/login', 'POST', { password: $('login').elements.password.value }); csrf = data.csrf; $('login').reset(); await refresh(); showWorkspace(true); notice('Signed in.'); }
+  try { const data = await api('/login', 'POST', { identifier: $('login').elements.identifier.value, password: $('login').elements.password.value }); csrf = data.csrf; currentUser = data.user; $('login').reset(); await refresh(); showWorkspace(true); notice('Signed in.'); }
   catch (error) { notice(error.message, true); } finally { button.disabled = false; }
 };
 $('logout').onclick = async () => { if (busy || !mayDiscard()) return; try { await api('/logout', 'POST'); csrf = ''; dirty = false; form.reset(); form.hidden = true; posts = []; $('posts').replaceChildren(); showWorkspace(false); notice('Signed out.'); } catch (error) { notice(error.message, true); } };
@@ -105,4 +107,5 @@ $('smtp-verify').onclick = async () => {
   catch (error) { smtpNotice(error.message, true); }
   finally { busy = false; $('smtp-fields').disabled = false; }
 };
-try { const auth = await api('/session'); csrf = auth.csrf; await refresh(); showWorkspace(true); } catch { showWorkspace(false); }
+const accountControls = setupAccounts(api, () => { csrf = ''; currentUser = null; dirty = false; smtpDirty = false; form.reset(); form.hidden = true; $('posts').replaceChildren(); showWorkspace(false); notice('Password changed. Please sign in again.'); });
+try { const auth = await api('/session'); csrf = auth.csrf; currentUser = auth.user; await refresh(); showWorkspace(true); } catch { showWorkspace(false); }

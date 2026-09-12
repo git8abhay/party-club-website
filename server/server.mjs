@@ -1,14 +1,16 @@
 import http from 'node:http';
-import { randomBytes, randomUUID, createHash, scryptSync, timingSafeEqual } from 'node:crypto';
+import { randomBytes, randomUUID, createHash } from 'node:crypto';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPartnerMailer, createSmtpTransport, validateEnquiry, services } from './partner.mjs';
+import { createAccounts, publicUser } from './accounts.mjs';
 import { createSmtpSettings } from './smtp-settings.mjs';
 import { openStore } from './store.mjs';
 import { escape, validatePost, page, articleBody } from './content.mjs';
 const here = dirname(fileURLToPath(import.meta.url));
 const db = openStore();
+const accounts = createAccounts(db);
 const production = process.env.NODE_ENV === 'production';
 const origin = (process.env.SITE_URL || (production ? 'https://partyclubapp.com' : 'http://127.0.0.1:5173')).replace(/\/$/, '');
 if (production && !origin.startsWith('https://')) throw new Error('Production SITE_URL must use HTTPS.');
@@ -28,7 +30,9 @@ const partnerBody = readFileSync(resolve(here, 'partner.html'), 'utf8').replace(
 const adminBody = readFileSync(resolve(here, 'admin.html'), 'utf8');
 function session(req) {
   const token = /(?:^|;\s*)pc_blog=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
-  return token && db.prepare('SELECT * FROM sessions WHERE token = ? AND expires > ?').get(hash(token), Date.now());
+  const found = token && db.prepare('SELECT * FROM sessions WHERE token = ? AND expires > ?').get(hash(token), Date.now());
+  const user = found && accounts.get(found.userId);
+  return user?.active ? { ...found, user: publicUser(user) } : null;
 }
 function document(res, status, options) { send(res, status, page({ origin, ...options })); }
 const server = http.createServer(async (req, res) => {
@@ -37,6 +41,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, origin);
   const path = url.pathname;
   const admin = path.startsWith('/admin') || path.startsWith('/api/blog');
+  if (path === '/blog-assets/admin.js' || path === '/blog-assets/accounts.js') res.setHeader('Cache-Control', 'no-store');
   if (admin) { res.setHeader('Cache-Control', 'no-store'); res.setHeader('X-Robots-Tag', 'noindex, nofollow'); res.setHeader('X-Frame-Options', 'DENY'); }
   if (path.startsWith('/blog') || path.startsWith('/partner') || path === '/api/partner' || admin) res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
   try {
@@ -70,26 +75,39 @@ const server = http.createServer(async (req, res) => {
       if (!['GET', 'POST', 'PUT', 'DELETE'].includes(req.method)) return json(res, 405, { error: 'Method not allowed.' });
       if (req.method !== 'GET' && req.headers.origin !== origin) return json(res, 403, { error: 'Untrusted request origin.' });
       if (path === '/api/blog/login' && req.method === 'POST') {
-        const stored = db.prepare("SELECT value FROM settings WHERE key = 'password'").get()?.value;
-        if (!stored) return json(res, 503, { error: 'Admin is not configured. Run npm run blog:setup on the server first.' });
-        const ip = req.socket.remoteAddress;
+        const input = await body(req);
+        const identifier = typeof input.identifier === 'string' ? input.identifier.trim().toLowerCase() : '';
+        if (!identifier || identifier.length > 254) return json(res, 400, { error: 'Enter your username or email and password.' });
+        const ip = `login:${hash(`${req.socket.remoteAddress}:${identifier}`)}`;
         db.prepare('DELETE FROM attempts WHERE expires < ?').run(Date.now());
         const attempt = db.prepare('SELECT * FROM attempts WHERE ip = ?').get(ip);
-        if (attempt?.count >= 10) return json(res, 429, { error: 'Too many login attempts. Try again in 15 minutes.' });
-        const input = await body(req);
+        if (attempt?.count >= 10) { res.setHeader('Retry-After', '900'); return json(res, 429, { error: 'Too many login attempts for this account. Try again in 15 minutes.' }); }
         db.prepare('INSERT INTO attempts VALUES (?, 1, ?) ON CONFLICT(ip) DO UPDATE SET count = count + 1').run(ip, Date.now() + 900000);
-        const [salt, expected] = stored.split(':');
-        if (typeof input.password !== 'string' || input.password.length > 1000 || !timingSafeEqual(scryptSync(input.password, salt, 64), Buffer.from(expected, 'hex'))) return json(res, 401, { error: 'Incorrect password.' });
+        const user = accounts.authenticate(identifier, input.password);
+        if (!user) return json(res, 401, { error: 'Incorrect username/email or password.' });
         db.prepare('DELETE FROM attempts WHERE ip = ?').run(ip);
         db.prepare('DELETE FROM sessions WHERE expires < ?').run(Date.now());
         const token = randomBytes(32).toString('hex'), csrf = randomBytes(32).toString('hex');
-        db.prepare('INSERT INTO sessions VALUES (?, ?, ?)').run(hash(token), csrf, Date.now() + 28800000);
+        db.prepare('INSERT INTO sessions (token,csrf,expires,userId) VALUES (?, ?, ?, ?)').run(hash(token), csrf, Date.now() + 28800000, user.id);
         res.setHeader('Set-Cookie', `pc_blog=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800${production ? '; Secure' : ''}`);
-        return json(res, 200, { csrf });
+        return json(res, 200, { csrf, user: publicUser(user) });
       }
       const auth = session(req);
       if (!auth) return json(res, 401, { error: 'Please sign in.' });
       if (req.method !== 'GET' && req.headers['x-csrf-token'] !== auth.csrf) return json(res, 403, { error: 'Invalid session token. Refresh and try again.' });
+      if ((path.startsWith('/api/blog/smtp') || path.startsWith('/api/blog/users')) && auth.user.role !== 'admin') return json(res, 403, { error: 'Administrator access required.' });
+      if (path === '/api/blog/users' && req.method === 'GET') return json(res, 200, accounts.list());
+      const userId = path.match(/^\/api\/blog\/users\/([a-f0-9-]+)$/)?.[1];
+      if ((path === '/api/blog/users' && req.method === 'POST') || (userId && req.method === 'PUT')) {
+        const input = await body(req);
+        return json(res, userId ? 200 : 201, accounts.save(input, auth.user.id, userId));
+      }
+      if (path === '/api/blog/password' && req.method === 'POST') {
+        const input = await body(req);
+        accounts.changePassword(auth.user.id, input.currentPassword, input.newPassword);
+        res.setHeader('Set-Cookie', `pc_blog=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${production ? '; Secure' : ''}`);
+        return json(res, 200, { ok: true });
+      }
       if (path === '/api/blog/smtp' && req.method === 'GET') return json(res, 200, smtpSettings.publicSettings());
       if (path === '/api/blog/smtp' && req.method === 'PUT') {
         const input = await body(req);
@@ -111,7 +129,7 @@ const server = http.createServer(async (req, res) => {
         } catch { return json(res, 502, { error: 'Connection check failed. Check the host, port and credentials with your email provider.' }); }
         finally { transport?.close(); }
       }
-      if (path === '/api/blog/session' && req.method === 'GET') return json(res, 200, { csrf: auth.csrf });
+      if (path === '/api/blog/session' && req.method === 'GET') return json(res, 200, { csrf: auth.csrf, user: auth.user });
       if (path === '/api/blog/logout' && req.method === 'POST') {
         db.prepare('DELETE FROM sessions WHERE token = ?').run(auth.token);
         res.setHeader('Set-Cookie', `pc_blog=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${production ? '; Secure' : ''}`);
@@ -167,7 +185,7 @@ const server = http.createServer(async (req, res) => {
     const root = path.startsWith('/blog-assets/') ? here : resolve('dist');
     const relative = path.startsWith('/blog-assets/') ? path.slice('/blog-assets/'.length) : decodeURIComponent(path).slice(1);
     const file = resolve(root, relative);
-    const allowedAsset = root !== here || ['blog.css', 'admin.js', 'partner.js'].includes(relative);
+    const allowedAsset = root !== here || ['blog.css', 'admin.js', 'partner.js', 'accounts.js'].includes(relative);
     if (allowedAsset && file.startsWith(root + '/') && existsSync(file) && statSync(file).isFile()) {
       const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain', '.mp4': 'video/mp4', '.json': 'application/json' };
       return send(res, 200, readFileSync(file), types[extname(file)] || 'application/octet-stream');

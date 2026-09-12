@@ -13,7 +13,7 @@ test('content escaping and URL validation', () => {
 test('authenticated CMS lifecycle, privacy, SEO and persistence', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'partyclub-blog-test-'));
   const origin = 'http://127.0.0.1:3198';
-  const env = { ...process.env, NODE_ENV: 'test', SMTP_HOST: '', SMTP_USER: '', SMTP_PASSWORD: '', SMTP_FROM: '', BLOG_DB_PATH: join(dir, 'blog.sqlite'), BLOG_PORT: '3198', SITE_URL: origin, BLOG_ADMIN_PASSWORD: 'test-only-password-29745' };
+  const env = { ...process.env, NODE_ENV: 'test', SMTP_HOST: '', SMTP_USER: '', SMTP_PASSWORD: '', SMTP_FROM: '', BLOG_DB_PATH: join(dir, 'blog.sqlite'), BLOG_PORT: '3198', SITE_URL: origin, BLOG_ADMIN_USERNAME: 'admin', BLOG_ADMIN_EMAIL: 'admin@example.com', BLOG_ADMIN_PASSWORD: 'test-only-password-29745' };
   assert.equal(spawnSync(process.execPath, ['server/setup.mjs'], { env }).status, 0);
   let child;
   async function start() {
@@ -38,12 +38,31 @@ test('authenticated CMS lifecycle, privacy, SEO and persistence', async () => {
     await request('/api/partner', 'POST', enquiry);
     assert.equal((await request('/api/partner', 'POST', enquiry)).status, 429);
     assert.equal((await request('/api/blog/posts')).status, 401);
-    assert.equal((await request('/api/blog/login', 'POST', { password: env.BLOG_ADMIN_PASSWORD }, { Origin: 'https://evil.example' })).status, 403);
-    assert.equal((await request('/api/blog/login', 'POST', { password: 'wrong' })).status, 401);
+    assert.equal((await request('/api/blog/login', 'POST', { identifier: 'admin', password: env.BLOG_ADMIN_PASSWORD }, { Origin: 'https://evil.example' })).status, 403);
+    assert.equal((await request('/api/blog/login', 'POST', { identifier: 'admin', password: 'wrong' })).status, 401);
     assert.equal((await request('/api/blog/smtp')).status, 401);
-    const login = await request('/api/blog/login', 'POST', { password: env.BLOG_ADMIN_PASSWORD });
+    const login = await request('/api/blog/login', 'POST', { identifier: 'admin', password: env.BLOG_ADMIN_PASSWORD });
     assert.match(login.headers.get('set-cookie'), /HttpOnly; SameSite=Strict/);
     cookie = login.headers.get('set-cookie').split(';')[0]; csrf = (await login.json()).csrf;
+    const editorInput = { name: 'Test Editor', username: 'editor', email: 'editor@example.com', password: 'Editor-password-123', role: 'editor', active: true };
+    assert.equal((await request('/api/blog/users', 'POST', editorInput, { 'X-CSRF-Token': '' })).status, 403);
+    const createdEditor = await request('/api/blog/users', 'POST', editorInput);
+    assert.equal(createdEditor.status, 201); let editorAccount = await createdEditor.json();
+    const editorLogin = await request('/api/blog/login', 'POST', { identifier: 'EDITOR@example.com', password: editorInput.password });
+    assert.equal(editorLogin.status, 200);
+    const editorAuth = await editorLogin.json();
+    const editorHeaders = { Cookie: editorLogin.headers.get('set-cookie').split(';')[0], 'X-CSRF-Token': editorAuth.csrf };
+    assert.equal(editorAuth.user.role, 'editor');
+    assert.equal((await request('/api/blog/smtp', 'GET', undefined, editorHeaders)).status, 403);
+    assert.equal((await request('/api/blog/users', 'POST', editorInput, editorHeaders)).status, 403);
+    assert.equal((await request('/api/blog/posts', 'GET', undefined, editorHeaders)).status, 200);
+    assert.equal((await request('/api/blog/password', 'POST', { currentPassword: 'wrong', newPassword: 'New-editor-password-123' }, editorHeaders)).status, 400);
+    assert.equal((await request('/api/blog/password', 'POST', { currentPassword: editorInput.password, newPassword: 'New-editor-password-123' }, editorHeaders)).status, 200);
+    assert.equal((await request('/api/blog/posts', 'GET', undefined, editorHeaders)).status, 401);
+    assert.equal((await request('/api/blog/posts')).status, 200);
+    editorAccount = (await (await request('/api/blog/users')).json()).find(user => user.id === editorAccount.id);
+    assert.equal((await request(`/api/blog/users/${editorAccount.id}`, 'PUT', { ...editorAccount, password: '', active: false })).status, 200);
+    assert.equal((await request('/api/blog/login', 'POST', { identifier: 'editor', password: 'New-editor-password-123' })).status, 401);
     const smtpInput = { host: 'smtp.example.com', port: 587, username: 'sender', from: 'sender@example.com', password: 'smtp-test-secret', version: '' };
     assert.equal((await request('/api/blog/smtp', 'PUT', smtpInput, { 'X-CSRF-Token': '' })).status, 403);
     assert.equal((await request('/api/blog/smtp/verify', 'POST', { version: '' })).status, 400);
