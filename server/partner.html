@@ -1,0 +1,27 @@
+<main id="main" class="partner-page">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span>Partner with us</span></nav>
+  <div class="partner-grid">
+    <section class="partner-intro">
+      <span class="eyebrow">For celebration businesses</span>
+      <h1>Your business.<br> Their next<br> <em>celebration.</em></h1>
+      <p class="lead">Bring your services to PartyClub. Tell us a little about your business and let’s explore how we can work together.</p>
+      <div class="partner-benefits"><h2>Let’s make great moments happen</h2><ul><li>Introduce your services to people planning celebrations.</li><li>Connect with customers looking for local businesses.</li><li>Share what makes your business special.</li></ul></div>
+      <p class="muted">Prefer email? <a href="mailto:support@partyclubapp.com">support@partyclubapp.com</a></p>
+    </section>
+    <section class="panel partner-form-panel" aria-labelledby="form-heading">
+      <span class="eyebrow">Start a conversation</span><h2 id="form-heading">Partner with us</h2><p>Share your details. Our team will get in touch.</p>
+      <form id="partner-form" action="/api/partner" method="post">
+        <p class="muted">All fields are required unless marked optional.</p>
+        <div class="field-pair"><label>Your name<input name="name" autocomplete="name" required maxlength="100" placeholder="Full name"></label><label>Business name<input name="business" autocomplete="organization" required maxlength="150" placeholder="Your business"></label></div>
+        <div class="field-pair"><label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@business.com"></label><label>Phone number<input name="phone" type="tel" autocomplete="tel" required maxlength="25" placeholder="+91 98765 43210"></label></div>
+        <div class="field-pair"><label>City<input name="city" autocomplete="address-level2" required maxlength="100" placeholder="Where do you operate?"></label><label>Your service<select name="service" required><option value="">Select a service</option>{{SERVICE_OPTIONS}}</select></label></div>
+        <label>Tell us about your business <span class="muted">(optional)</span><textarea name="message" rows="4" maxlength="3000" placeholder="What do you offer? Is there anything you’d like us to know?"></textarea></label>
+        <div class="form-trap" aria-hidden="true"><label>Leave this field empty<input name="companyWebsite" tabindex="-1" autocomplete="off"></label></div>
+        <label class="consent"><input type="checkbox" name="consent" required><span>I agree to be contacted by PartyClub about this enquiry. Read our <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+        <button class="button partner-submit" type="submit">Send enquiry <span aria-hidden="true">→</span></button>
+        <p id="partner-status" role="status" aria-live="polite" tabindex="-1"></p>
+        <noscript><p>Please enable JavaScript to submit this form, or email <a href="mailto:support@partyclubapp.com">support@partyclubapp.com</a>.</p></noscript>
+      </form>
+    </section>
+  </div>
+</main><script type="module" src="/blog-assets/partner.js"></script>

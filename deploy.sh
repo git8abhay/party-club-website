@@ -17,7 +17,7 @@ Deploy Party Club website to a live server.
 Required environment variables:
   DEPLOY_HOST   Server hostname or IP, for example partyclubapp.com
   DEPLOY_USER   SSH user, for example ubuntu
-  DEPLOY_PATH   Absolute web root path, for example /var/www/partyclubapp.com/html
+  DEPLOY_PATH   Absolute application path, for example /srv/partyclub
 
 Optional environment variables:
   DEPLOY_PORT   SSH port. Defaults to 22.
@@ -26,7 +26,7 @@ Optional environment variables:
 Example:
   DEPLOY_HOST=partyclubapp.com \
   DEPLOY_USER=ubuntu \
-  DEPLOY_PATH=/var/www/partyclubapp.com/html \
+  DEPLOY_PATH=/srv/partyclub \
   ./deploy.sh
 USAGE
 }
@@ -70,8 +70,10 @@ if [[ "$RSYNC_DELETE" == "true" ]]; then
   RSYNC_ARGS+=(--delete)
 fi
 
-echo "Deploying dist/ to $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH ..."
-rsync "${RSYNC_ARGS[@]}" -e "ssh -p $REMOTE_PORT" "$DIST_DIR"/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH"/
+echo "Deploying app to $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH ..."
+# Keep persistent data outside the synchronized directories, even with --delete.
+rsync "${RSYNC_ARGS[@]}" -e "ssh -p $REMOTE_PORT" "$DIST_DIR" "$ROOT_DIR/server" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH"/
+rsync -az -e "ssh -p $REMOTE_PORT" "$ROOT_DIR/package.json" "$ROOT_DIR/package-lock.json" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH"/
 
-echo "Deployment complete."
+echo "Files uploaded. Run npm ci --omit=dev on the server, then configure/restart the Node service and HTTPS proxy as described in README.md."
 echo "Verify: https://partyclubapp.com/"

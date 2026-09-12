@@ -340,6 +340,10 @@ footer { color: white; background: #050619; }
 .footer-inner strong { margin-bottom: 6px; font-size: .88rem; }
 .footer-inner a { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,.58); font-size: .79rem; }
 .footer-inner a:hover { color: white; }
+.footer-socials { display: flex; gap: 10px; margin-top: 4px; }
+.footer-socials a { width: 44px; height: 44px; justify-content: center; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; transition: background-color .2s, border-color .2s, color .2s; }
+.footer-socials a:hover { background: #ed2891; border-color: #ed2891; }
+.footer-socials a:focus-visible { outline: 2px solid #ff9cd2; outline-offset: 4px; }
 .footer-bottom { width: min(1180px,calc(100% - 40px)); margin: auto; padding: 18px 0; display: flex; justify-content: space-between; color: rgba(255,255,255,.4); border-top: 1px solid rgba(255,255,255,.1); font-size: .7rem; }
 .mobile-download { display: none; }
 

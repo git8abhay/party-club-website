@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://partyclubapp.com/sitemap.xml
+
+Sitemap: https://partyclubapp.com/blog-sitemap.xml

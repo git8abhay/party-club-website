@@ -108,7 +108,7 @@ export default function Footer() {
               For Vendors
             </h4>
             <ul className="space-y-2.5 text-xs font-bold text-slate-400">
-              <li><a href="#partner" className="hover:text-white transition flex items-center gap-1">Partner With Us <ArrowUpRight className="h-3 w-3 text-slate-400" /></a></li>
+              <li><a href="/partner" className="hover:text-white transition flex items-center gap-1">Partner With Us <ArrowUpRight className="h-3 w-3 text-slate-400" /></a></li>
               <li><a href="#apps" className="hover:text-white transition">Apps For You</a></li>
               <li><a href="#portal" className="hover:text-white transition">Vendor Portal</a></li>
               <li><a href="#guidelines" className="hover:text-white transition">Community Guidelines</a></li>

@@ -362,31 +362,25 @@ export default function PolicyPages({ activePolicy, onNavigate }: PolicyPagesPro
 
       {/* Light Theme Persistent Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/60 py-4 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-3">
+        <div className="max-w-4xl mx-auto px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <button 
-            onClick={() => onNavigate("home")} 
-            className="flex min-h-11 items-center gap-2 group text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 cursor-pointer select-none transition"
+            onClick={() => onNavigate("home")}
+            aria-label="Back to home"
+            className="justify-self-start flex min-h-11 items-center gap-2 group text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 cursor-pointer select-none transition"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            <span className="hidden min-[360px]:inline">Back to Home</span>
+            <span className="hidden sm:inline">Back to Home</span>
           </button>
 
           {/* Logo Center */}
           <button onClick={() => onNavigate("home")} className="flex min-h-11 items-center gap-2 group select-none cursor-pointer">
             <img
-              src="/logo_1.png"
+              src="/logo_2.png"
               alt="Party Club India logo"
-              className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="text-base sm:text-lg font-black tracking-tight text-slate-900">
-              party club
-            </span>
           </button>
 
-          {/* Location / Status placeholder */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200/80 rounded-lg text-[10px] font-extrabold text-slate-500">
-            <span>Delhi NCR</span>
-          </div>
         </div>
       </header>
 

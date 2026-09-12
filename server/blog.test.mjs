@@ -1,0 +1,81 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
+import { once } from 'node:events';
+import { markdown, validatePost } from './content.mjs';
+test('content escaping and URL validation', () => {
+  assert.equal(markdown('# Hello\n\n<script>alert(1)</script>'), '<h2>Hello</h2>\n<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>');
+  assert.throws(() => validatePost({}), /Invalid/);
+});
+test('authenticated CMS lifecycle, privacy, SEO and persistence', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'partyclub-blog-test-'));
+  const origin = 'http://127.0.0.1:3198';
+  const env = { ...process.env, NODE_ENV: 'test', SMTP_HOST: '', SMTP_USER: '', SMTP_PASSWORD: '', SMTP_FROM: '', BLOG_DB_PATH: join(dir, 'blog.sqlite'), BLOG_PORT: '3198', SITE_URL: origin, BLOG_ADMIN_PASSWORD: 'test-only-password-29745' };
+  assert.equal(spawnSync(process.execPath, ['server/setup.mjs'], { env }).status, 0);
+  let child;
+  async function start() {
+    child = spawn(process.execPath, ['server/server.mjs'], { env, stdio: ['ignore', 'pipe', 'pipe'] });
+    await Promise.race([once(child.stdout, 'data'), once(child, 'exit').then(() => { throw new Error('Server failed'); }), new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error('Startup timed out')), 5000); timer.unref(); })]);
+  }
+  async function stop() { const exit = once(child, 'exit'); child.kill(); await exit; }
+  let cookie = '', csrf = '';
+  const request = (path, method = 'GET', data, headers = {}) => fetch(origin + path, { method, headers: { Origin: origin, Cookie: cookie, 'Content-Type': 'application/json', 'X-CSRF-Token': csrf, ...headers }, ...(data ? { body: JSON.stringify(data) } : {}) });
+  const draft = { title: 'A celebration guide', slug: 'celebration-guide', excerpt: 'A useful guide.', content: '## Plan ahead\n\nMake a **guest list**.\n\n<script>alert(1)</script>', author: 'Test author', category: 'Planning', cover: '/images/dj-performing.jpg', coverAlt: 'DJ at a celebration', seoTitle: 'Celebration planning guide', seoDescription: 'Learn how to plan your celebration.', status: 'draft' };
+  try {
+    await start();
+    assert.equal((await request('/partner')).status, 200);
+    assert.match(await (await request('/partner')).text(), /id="partner-form"/);
+    assert.equal((await request('/api/partner')).status, 405);
+    const enquiry = { name: 'Test', business: 'Test Events', email: 'test@example.com', phone: '+91 9876543210', city: 'Delhi', service: 'Event planning', message: '', consent: true };
+    assert.equal((await request('/api/partner', 'POST', enquiry, { Origin: 'https://evil.example' })).status, 403);
+    assert.equal((await request('/api/partner', 'POST', { ...enquiry, consent: false })).status, 400);
+    assert.equal((await request('/api/partner', 'POST', { ...enquiry, companyWebsite: 'spam' })).status, 400);
+    assert.equal((await request('/api/partner', 'POST', enquiry)).status, 503);
+    await request('/api/partner', 'POST', enquiry);
+    await request('/api/partner', 'POST', enquiry);
+    assert.equal((await request('/api/partner', 'POST', enquiry)).status, 429);
+    assert.equal((await request('/api/blog/posts')).status, 401);
+    assert.equal((await request('/api/blog/login', 'POST', { password: env.BLOG_ADMIN_PASSWORD }, { Origin: 'https://evil.example' })).status, 403);
+    assert.equal((await request('/api/blog/login', 'POST', { password: 'wrong' })).status, 401);
+    assert.equal((await request('/api/blog/smtp')).status, 401);
+    const login = await request('/api/blog/login', 'POST', { password: env.BLOG_ADMIN_PASSWORD });
+    assert.match(login.headers.get('set-cookie'), /HttpOnly; SameSite=Strict/);
+    cookie = login.headers.get('set-cookie').split(';')[0]; csrf = (await login.json()).csrf;
+    const smtpInput = { host: 'smtp.example.com', port: 587, username: 'sender', from: 'sender@example.com', password: 'smtp-test-secret', version: '' };
+    assert.equal((await request('/api/blog/smtp', 'PUT', smtpInput, { 'X-CSRF-Token': '' })).status, 403);
+    assert.equal((await request('/api/blog/smtp/verify', 'POST', { version: '' })).status, 400);
+    assert.equal((await request('/api/blog/smtp', 'PUT', smtpInput)).status, 200);
+    const smtpSaved = await (await request('/api/blog/smtp')).json();
+    assert.equal(smtpSaved.hasPassword, true); assert.equal(smtpSaved.source, 'admin'); assert.doesNotMatch(JSON.stringify(smtpSaved), /smtp-test-secret/);
+    assert.equal((await request('/api/blog/smtp/verify', 'POST', { version: '' })).status, 409);
+    assert.equal((await request('/api/blog/smtp', 'PUT', { ...smtpInput, password: '', version: smtpSaved.version, port: 465 })).status, 200);
+    assert.equal((await request('/api/blog/posts', 'POST', draft, { 'X-CSRF-Token': '' })).status, 403);
+    let response = await request('/api/blog/posts', 'POST', draft); assert.equal(response.status, 201); let post = await response.json();
+    assert.equal((await request('/blog/celebration-guide')).status, 404);
+    assert.doesNotMatch(await (await request('/blog-sitemap.xml')).text(), /celebration-guide/);
+    assert.equal((await request(`/admin/preview/${post.id}`, 'GET', undefined, { Cookie: '' })).url, origin + '/admin');
+    assert.equal((await request(`/admin/preview/${post.id}`)).headers.get('x-robots-tag'), 'noindex, nofollow');
+    assert.equal((await request('/api/blog/posts', 'POST', draft)).status, 409);
+    assert.equal((await request('/api/blog/posts', 'POST', { ...draft, slug: 'bad-image', cover: 'javascript:alert(1)' })).status, 400);
+    response = await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, status: 'published' }); assert.equal(response.status, 200); post = await response.json();
+    const html = await (await request('/blog/celebration-guide')).text();
+    assert.match(html, /<h1>A celebration guide<\/h1>/); assert.match(html, /<h2>Plan ahead<\/h2>/); assert.match(html, /&lt;script&gt;/);
+    assert.match(html, /<title>Celebration planning guide<\/title>/); assert.match(html, /rel="canonical" href="http:\/\/127.0.0.1:3198\/blog\/celebration-guide"/);
+    const schema = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]); assert.equal(schema['@graph'][0]['@type'], 'BlogPosting'); assert.equal(schema['@graph'][1]['@type'], 'BreadcrumbList');
+    assert.match(await (await request('/blog-sitemap.xml')).text(), /celebration-guide/);
+    assert.match(await (await request('/blog')).text(), /href="\/blog\/celebration-guide"/);
+    assert.equal((await fetch(origin + '/blog/celebration-guide/', { redirect: 'manual' })).status, 301);
+    assert.equal((await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, slug: 'new-url' })).status, 400);
+    assert.equal((await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, updatedAt: 'stale' })).status, 409);
+    await stop(); await start(); assert.equal((await request('/blog/celebration-guide')).status, 200);
+    assert.equal((await (await request('/api/blog/smtp')).json()).port, 465);
+    response = await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, status: 'draft' }); assert.equal(response.status, 200);
+    assert.equal((await request('/blog/celebration-guide')).status, 404); assert.doesNotMatch(await (await request('/blog-sitemap.xml')).text(), /celebration-guide/);
+    assert.equal((await request(`/api/blog/posts/${post.id}`, 'DELETE')).status, 200);
+    await request('/api/blog/logout', 'POST'); assert.equal((await request('/api/blog/posts')).status, 401);
+    assert.equal((await request('/blog-assets/server.mjs')).status, 404);
+  } finally { if (child?.exitCode === null) await stop(); rmSync(dir, { recursive: true, force: true }); }
+});

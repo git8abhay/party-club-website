@@ -1,0 +1,46 @@
+<main id="main" class="admin">
+  <div class="admin-heading"><div><span class="eyebrow">PartyClub CMS</span><h1>Admin portal</h1><p>Create something worth celebrating.</p></div><button id="logout" hidden>Sign out</button></div>
+  <p id="message" role="status" aria-live="polite"></p>
+  <form id="login" class="panel login"><h2>Welcome back</h2><p>Sign in to manage your blog and email settings.</p><label>Admin password<input name="password" type="password" autocomplete="current-password" required maxlength="1000"></label><button class="button" type="submit">Sign in</button></form>
+  <section id="workspace" hidden>
+    <details class="panel smtp-panel" id="smtp-panel">
+      <summary>SMTP settings <span class="muted">Partner enquiry emails</span></summary>
+      <p>Configure the email account used to send partner enquiries to <strong>support@partyclubapp.com</strong>.</p>
+      <p id="smtp-source" class="muted" role="status"></p>
+      <form id="smtp-form">
+        <fieldset id="smtp-fields" disabled>
+          <div class="field-pair"><label>SMTP host<input name="host" required maxlength="253" placeholder="smtp.your-provider.com" autocomplete="off"></label><label>Port and encryption<select name="port"><option value="587">587 — STARTTLS</option><option value="465">465 — SSL/TLS</option></select></label></div>
+          <div class="field-pair"><label>SMTP username<input name="username" required maxlength="320" autocomplete="off" placeholder="Your sending account"></label><label>SMTP password<input name="password" type="password" maxlength="1000" autocomplete="new-password"><small id="smtp-password-help">Enter your SMTP password or app password.</small></label></div>
+          <label>Sender email address<input name="from" type="email" required maxlength="254" placeholder="support@partyclubapp.com"><small>Use an address authorized by your email provider.</small></label>
+          <div class="actions"><button type="submit" class="button">Save SMTP settings</button><button type="button" id="smtp-verify">Check saved connection</button></div>
+        </fieldset>
+      </form>
+      <button type="button" id="smtp-reload" hidden>Reload SMTP settings</button>
+      <p id="smtp-status" role="status" aria-live="polite"></p>
+    </details>
+    <div class="toolbar"><h2>Your articles <span id="count"></span></h2><button class="button" id="new">+ New article</button></div>
+    <div id="posts" class="post-list"></div>
+    <form id="editor" class="panel" hidden>
+      <div class="toolbar"><h2 id="editor-title">New article</h2><button type="button" id="close">Close editor</button></div>
+      <div class="editor-grid"><div>
+        <label>Article title<input name="title" required maxlength="160" placeholder="How to plan a celebration to remember"></label>
+        <label>URL slug<input name="slug" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="Generated from your title"><small>Published URLs stay fixed to preserve incoming links.</small></label>
+        <label>Excerpt<textarea name="excerpt" rows="3" maxlength="400" placeholder="A short introduction for the blog listing."></textarea></label>
+        <label>Article content<textarea name="content" rows="18" required maxlength="100000" placeholder="Write your article here..."></textarea><small>Separate paragraphs with a blank line. Use ## for section headings, ### for subheadings, - for bullet lists, **bold**, and *italic*. HTML is displayed as text.</small></label>
+      </div><div>
+        <label>Author<input name="author" required maxlength="100" placeholder="Author’s name"></label>
+        <label>Category<input name="category" maxlength="80" placeholder="Party planning"></label>
+        <label>Cover image URL<input name="cover" maxlength="2000" placeholder="https://… or /images/…"><small>Use an image URL you have permission to publish.</small></label>
+        <label>Image alternative text<input name="coverAlt" maxlength="200" placeholder="Describe what is in the photo"></label>
+        <fieldset><legend>Search engine appearance</legend>
+          <label>SEO title<input name="seoTitle" maxlength="70" placeholder="Defaults to the article title"><small id="title-count">0 / 70 characters</small></label>
+          <label>SEO description<textarea name="seoDescription" rows="4" maxlength="170" placeholder="Describe what readers will learn."></textarea><small id="description-count">0 / 170 characters</small></label>
+          <div class="search-preview"><small id="seo-url"></small><h3 id="seo-title"></h3><p id="seo-description"></p></div>
+        </fieldset>
+        <label>Status<select name="status"><option value="draft">Draft</option><option value="published">Published</option></select></label>
+        <p class="muted">Publishing requires an excerpt and SEO description. To unpublish, switch to Draft and save.</p>
+      </div></div>
+      <div class="actions"><button type="submit" class="button" id="save">Save article</button><a id="preview" target="_blank" rel="noopener" hidden>Preview saved article ↗</a><a id="view" target="_blank" rel="noopener" hidden>View published article ↗</a></div>
+    </form>
+  </section>
+</main><script type="module" src="/blog-assets/admin.js"></script>

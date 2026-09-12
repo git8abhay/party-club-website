@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Persistent blog database and secrets
+data/
+.env
+.env.*
+
+!.env.example

@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight, Building2, CalendarHeart,
-  ChevronDown, Download, ExternalLink, Heart, MapPin, Menu,
+  ChevronDown, Download, Heart, MapPin, Menu,
   MessageSquareText, PartyPopper, Search, ShieldCheck, Sparkles, Store,
   Users, X,
 } from "lucide-react";
@@ -18,7 +18,7 @@ function SectionTitle({ eyebrow, children, copy }: { eyebrow?: string; children:
 function Header() {
   const [open, setOpen] = useState(false);
   useEffect(() => { const close = () => setOpen(false); window.addEventListener("resize", close); return () => window.removeEventListener("resize", close); }, []);
-  const links = [["Features", "#features"], ["How it works", "#how-it-works"], ["For vendors", "#vendors"], ["About", "#why"]];
+  const links = [["Features", "#features"], ["How it works", "#how-it-works"], ["For vendors", "#vendors"], ["About", "#why"], ["Blog", "/blog"]];
   return <header className="site-header"><a className="wordmark" href="#top" aria-label="PartyClub India home"><img src="/logo_1.png" alt="PartyClub India" /></a>
     <button className="menu-button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="primary-navigation" aria-label="Toggle navigation">{open ? <X /> : <Menu />}</button>
     <nav id="primary-navigation" className={open ? "is-open" : ""} aria-label="Main navigation">{links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}<a className="button button-outline" href={siteConfig.partnerUrl}>Partner with us</a><a className="button button-pink" href="#download">Download app <Download size={16} /></a></nav>
@@ -83,6 +83,13 @@ function FAQ() { const [active,setActive] = useState<number | null>(null); retur
 
 function FinalDownload() { return <section className="download-panel" id="download"><motion.div className="download-inner" {...reveal}><div className="app-symbol"><PartyPopper /></div><div><span className="eyebrow">Your next celebration</span><h2>Starts <em>Here</em></h2><p>Choose your store to download PartyClub and start discovering nearby celebration services.</p></div><StoreButtons /></motion.div></section>; }
 
-function Footer() { return <footer><div className="footer-inner"><div className="footer-brand"><img src="/logo_1.png" alt="PartyClub India" /><p>Discover celebration services and connect with local businesses inside the PartyClub app.</p></div><div><strong>Explore</strong><a href="#features">App features</a><a href="#how-it-works">How it works</a><a href="#vendors">For vendors</a></div><div><strong>Legal</strong><a href="/privacy">Privacy policy</a><a href="/terms">Terms & conditions</a><a href="/cookies">Cookie policy</a><a href="/data-deletion">User data deletion</a><a href="/data-retention">Data retention</a><a href="/refund-policy">Refund policy</a></div><div><strong>Connect</strong><a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><a href={siteConfig.instagramUrl} target="_blank" rel="noreferrer">Instagram <ExternalLink size={13} /></a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} PartyClub India. All rights reserved.</span><span>Celebrations discovered in the app.</span></div></footer>; }
+function Footer() { return <footer><div className="footer-inner"><div className="footer-brand"><img src="/logo_1.png" alt="PartyClub India" /><p>Discover celebration services and connect with local businesses inside the PartyClub app.</p></div><div><strong>Explore</strong><a href="/blog">Blog</a><a href="/partner">Partner with us</a><a href="#features">App features</a><a href="#how-it-works">How it works</a><a href="#vendors">For vendors</a></div><div><strong>Legal</strong><a href="/privacy">Privacy policy</a><a href="/terms">Terms & conditions</a><a href="/cookies">Cookie policy</a><a href="/data-deletion">User data deletion</a><a href="/data-retention">Data retention</a><a href="/refund-policy">Refund policy</a></div><div><strong>Connect</strong><a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><div className="footer-socials" aria-label="Social profiles">
+  <a href={siteConfig.facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="PartyClub India on Facebook (opens in a new tab)" title="Facebook">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+  </a>
+  <a href={siteConfig.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="PartyClub India on Instagram (opens in a new tab)" title="Instagram">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="18" cy="6" r="1" fill="currentColor" stroke="none" /></svg>
+  </a>
+</div></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} PartyClub India. All rights reserved.</span><span>Celebrations discovered in the app.</span></div></footer>; }
 
 export default function LandingPage() { return <main className="landing-page"><Hero /><Categories /><HowItWorks /><AppShowcase /><Why /><Occasions /><VendorCTA /><FinalDownload /><FAQ /><Footer /><a className="mobile-download" href="#download"><Store size={17} /> Download PartyClub</a></main>; }
