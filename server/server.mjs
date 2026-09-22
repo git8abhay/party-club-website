@@ -1,14 +1,15 @@
 import http from 'node:http';
 import { randomBytes, randomUUID, createHash } from 'node:crypto';
-import { readFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, statSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPartnerMailer, createSmtpTransport, validateEnquiry, services } from './partner.mjs';
 import { createAccounts, publicUser } from './accounts.mjs';
 import { createSmtpSettings } from './smtp-settings.mjs';
 import { openStore } from './store.mjs';
-import { escape, validatePost, page, articleBody } from './content.mjs';
+import { escape, validatePost, page, articleBody, articleHtml } from './content.mjs';
 const here = dirname(fileURLToPath(import.meta.url));
+const uploadDir = resolve(process.env.BLOG_UPLOAD_DIR || resolve(here, 'uploads'));
 const db = openStore();
 const accounts = createAccounts(db);
 const production = process.env.NODE_ENV === 'production';
@@ -24,6 +25,44 @@ async function body(req) {
   let data = '';
   for await (const chunk of req) { data += chunk; if (Buffer.byteLength(data) > 150000) throw Object.assign(new Error('Request too large.'), { status: 413 }); }
   try { return JSON.parse(data); } catch { throw new Error('Invalid request body.'); }
+}
+async function imageUpload(req) {
+  const contentType = req.headers['content-type'] || '';
+  const boundaryMatch = contentType.match(/^multipart\/form-data;\s*boundary=(?:"([^"]+)"|([^;]+))/i);
+  if (!boundaryMatch) throw Object.assign(new Error('Use the image upload field.'), { status: 415 });
+  const boundary = Buffer.from(`--${boundaryMatch[1] || boundaryMatch[2]}`);
+  const chunks = []; let size = 0;
+  for await (const chunk of req) {
+    size += chunk.length;
+    if (size > 8 * 1024 * 1024) throw Object.assign(new Error('Image must be 8 MB or smaller.'), { status: 413 });
+    chunks.push(chunk);
+  }
+  const data = Buffer.concat(chunks); let cursor = 0; let image;
+  while (cursor < data.length) {
+    const start = data.indexOf(boundary, cursor);
+    if (start < 0) break;
+    const partStart = start + boundary.length;
+    if (data.subarray(partStart, partStart + 2).toString() === '--') break;
+    const next = data.indexOf(boundary, partStart);
+    if (next < 0) break;
+    const part = data.subarray(partStart + 2, next - 2);
+    const headerEnd = part.indexOf(Buffer.from('\r\n\r\n'));
+    if (headerEnd >= 0) {
+      const headers = part.subarray(0, headerEnd).toString('utf8');
+      if (/name="image"/.test(headers) && /filename="[^"]+"/.test(headers)) image = { headers, data: part.subarray(headerEnd + 4) };
+    }
+    cursor = next;
+  }
+  if (!image) throw Object.assign(new Error('Choose an image to upload.'), { status: 400 });
+  const mime = /content-type:\s*([^\r\n]+)/i.exec(image.headers)?.[1].trim().toLowerCase();
+  const signatures = { 'image/jpeg': [[0xff, 0xd8, 0xff]], 'image/png': [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]], 'image/webp': [[0x52, 0x49, 0x46, 0x46], [0x57, 0x45, 0x42, 0x50]] };
+  const validSignature = signatures[mime]?.every((bytes, index) => image.data.subarray(index ? 8 : 0, (index ? 8 : 0) + bytes.length).every((byte, i) => byte === bytes[i]));
+  if (!validSignature) throw Object.assign(new Error('Upload a valid JPG, PNG or WebP image.'), { status: 415 });
+  const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[mime];
+  const filename = `${randomUUID()}.${extension}`;
+  mkdirSync(uploadDir, { recursive: true, mode: 0o700 });
+  writeFileSync(resolve(uploadDir, filename), image.data, { mode: 0o600 });
+  return { url: `/blog-uploads/${filename}` };
 }
 const smtpSettings = createSmtpSettings(db);
 const partnerBody = readFileSync(resolve(here, 'partner.html'), 'utf8').replace('{{SERVICE_OPTIONS}}', services.map(service => `<option>${escape(service)}</option>`).join(''));
@@ -130,12 +169,13 @@ const server = http.createServer(async (req, res) => {
         finally { transport?.close(); }
       }
       if (path === '/api/blog/session' && req.method === 'GET') return json(res, 200, { csrf: auth.csrf, user: auth.user });
+      if (path === '/api/blog/upload' && req.method === 'POST') return json(res, 201, await imageUpload(req));
       if (path === '/api/blog/logout' && req.method === 'POST') {
         db.prepare('DELETE FROM sessions WHERE token = ?').run(auth.token);
         res.setHeader('Set-Cookie', `pc_blog=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${production ? '; Secure' : ''}`);
         return json(res, 200, { ok: true });
       }
-      if (path === '/api/blog/posts' && req.method === 'GET') return json(res, 200, all().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
+      if (path === '/api/blog/posts' && req.method === 'GET') return json(res, 200, all().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map(post => ({ ...post, renderedContent: articleHtml(post) })));
       const id = path.match(/^\/api\/blog\/posts\/([a-f0-9-]+)$/)?.[1];
       if ((path === '/api/blog/posts' && req.method === 'POST') || (id && req.method === 'PUT')) {
         const existing = id ? get(id) : null;
@@ -146,7 +186,7 @@ const server = http.createServer(async (req, res) => {
         const post = { ...data, id: id || randomUUID(), createdAt: existing?.createdAt || now, updatedAt: now, publishedAt: existing?.publishedAt || (data.status === 'published' ? now : null) };
         try { db.prepare('INSERT INTO posts VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, data=excluded.data').run(post.id, post.slug, JSON.stringify(post)); }
         catch (error) { if (error.message.includes('UNIQUE')) return json(res, 409, { error: 'That URL slug is already used. Choose another.' }); throw error; }
-        return json(res, existing ? 200 : 201, post);
+        return json(res, existing ? 200 : 201, { ...post, renderedContent: articleHtml(post) });
       }
       if (id && req.method === 'DELETE') {
         if (!get(id)) return json(res, 404, { error: 'Article not found.' });
@@ -181,6 +221,18 @@ const server = http.createServer(async (req, res) => {
         return document(res, 200, { title: post.seoTitle || `${post.title} | PartyClub India`, description: post.seoDescription, path, body: articleBody(post), schema, article: post, image: post.cover, imageAlt: post.coverAlt });
       }
       return document(res, 404, { title: 'Article not found | PartyClub India', description: 'This article is not available.', path, noindex: true, body: '<main id="main" class="empty"><h1>Article not found</h1><p>This article may have been removed or is not yet published.</p><a href="/blog">Browse articles</a></main>' });
+    }
+    if (path === '/blog-assets/quill.js' || path === '/blog-assets/quill.snow.css') {
+      const name = path.endsWith('.css') ? 'quill.snow.css' : 'quill.js';
+      return send(res, 200, readFileSync(resolve('node_modules/quill/dist', name)), name.endsWith('.css') ? 'text/css' : 'text/javascript');
+    }
+    if (path.startsWith('/blog-uploads/')) {
+      const relative = decodeURIComponent(path.slice('/blog-uploads/'.length));
+      if (!/^[a-f0-9-]+\.(?:jpg|png|webp)$/.test(relative)) return send(res, 404, 'Not found', 'text/plain');
+      const file = resolve(uploadDir, relative);
+      if (!file.startsWith(uploadDir + '/') || !existsSync(file) || !statSync(file).isFile()) return send(res, 404, 'Not found', 'text/plain');
+      const type = { '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' }[extname(file)];
+      return send(res, 200, readFileSync(file), type);
     }
     const root = path.startsWith('/blog-assets/') ? here : resolve('dist');
     const relative = path.startsWith('/blog-assets/') ? path.slice('/blog-assets/'.length) : decodeURIComponent(path).slice(1);

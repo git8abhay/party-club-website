@@ -81,6 +81,8 @@ test('authenticated CMS lifecycle, privacy, SEO and persistence', async () => {
     assert.equal((await request('/api/blog/posts', 'POST', { ...draft, slug: 'bad-image', cover: 'javascript:alert(1)' })).status, 400);
     response = await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, status: 'published' }); assert.equal(response.status, 200); post = await response.json();
     const html = await (await request('/blog/celebration-guide')).text();
+    assert.match(post.renderedContent, /<h2>Plan ahead/);
+
     assert.match(html, /<h1>A celebration guide<\/h1>/); assert.match(html, /<h2>Plan ahead<\/h2>/); assert.match(html, /&lt;script&gt;/);
     assert.match(html, /<title>Celebration planning guide<\/title>/); assert.match(html, /rel="canonical" href="http:\/\/127.0.0.1:3198\/blog\/celebration-guide"/);
     const schema = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]); assert.equal(schema['@graph'][0]['@type'], 'BlogPosting'); assert.equal(schema['@graph'][1]['@type'], 'BreadcrumbList');
@@ -89,6 +91,10 @@ test('authenticated CMS lifecycle, privacy, SEO and persistence', async () => {
     assert.equal((await fetch(origin + '/blog/celebration-guide/', { redirect: 'manual' })).status, 301);
     assert.equal((await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, slug: 'new-url' })).status, 400);
     assert.equal((await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, updatedAt: 'stale' })).status, 409);
+    response = await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, contentFormat: 'html', content: '<h2>Visual heading</h2><p><strong>Formatted</strong> text</p><ul><li>Bullet</li></ul><a href="javascript:alert(1)">Unsafe link</a>' });
+    assert.equal(response.status, 200); post = await response.json();
+    assert.match(post.renderedContent, /<strong>Formatted/); assert.doesNotMatch(post.content, /javascript:/);
+    assert.match(await (await request('/blog/celebration-guide')).text(), /<h2>Visual heading<\/h2>/);
     await stop(); await start(); assert.equal((await request('/blog/celebration-guide')).status, 200);
     assert.equal((await (await request('/api/blog/smtp')).json()).port, 465);
     response = await request(`/api/blog/posts/${post.id}`, 'PUT', { ...post, status: 'draft' }); assert.equal(response.status, 200);

@@ -12,6 +12,8 @@ Environment=SITE_URL=https://partyclubapp.com
 Environment=BLOG_HOST=127.0.0.1
 Environment=BLOG_PORT=3105
 Environment=BLOG_DB_PATH=/var/lib/partyclub-website/blog.sqlite
+Environment=BLOG_UPLOAD_DIR=/var/lib/partyclub-website/uploads
+Environment=BLOG_DB_PATH=/var/lib/partyclub-website/blog.sqlite
 ExecStart=/opt/partyclub-website/runtime/current/bin/node server/server.mjs
 Restart=on-failure
 RestartSec=5

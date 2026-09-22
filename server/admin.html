@@ -40,12 +40,30 @@
         <label>Article title<input name="title" required maxlength="160" placeholder="How to plan a celebration to remember"></label>
         <label>URL slug<input name="slug" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="Generated from your title"><small>Published URLs stay fixed to preserve incoming links.</small></label>
         <label>Excerpt<textarea name="excerpt" rows="3" maxlength="400" placeholder="A short introduction for the blog listing."></textarea></label>
-        <label>Article content<textarea name="content" rows="18" required maxlength="100000" placeholder="Write your article here..."></textarea><small>Separate paragraphs with a blank line. Use ## for section headings, ### for subheadings, - for bullet lists, **bold**, and *italic*. HTML is displayed as text.</small></label>
+        <div class="article-editor-field"><label id="article-content-label">Article content</label><input type="hidden" name="content"><input type="hidden" name="contentFormat" value="html">
+          <div id="article-toolbar" role="toolbar" aria-label="Article formatting">
+            <select class="ql-header" aria-label="Paragraph style"><option selected>Paragraph</option><option value="2">Heading 2</option><option value="3">Heading 3</option></select>
+            <button type="button" class="ql-bold" aria-label="Bold" title="Bold"></button><button type="button" class="ql-italic" aria-label="Italic" title="Italic"></button><button type="button" class="ql-underline" aria-label="Underline" title="Underline"></button>
+            <button type="button" class="ql-list" value="ordered" aria-label="Numbered list" title="Numbered list"></button><button type="button" class="ql-list" value="bullet" aria-label="Bullet list" title="Bullet list"></button>
+            <button type="button" class="ql-blockquote" aria-label="Quote" title="Quote"></button><button type="button" class="ql-link" aria-label="Insert link" title="Insert link"></button><button type="button" class="ql-clean" aria-label="Clear formatting" title="Clear formatting"></button>
+            <button type="button" id="article-undo" aria-label="Undo" title="Undo">↶</button><button type="button" id="article-redo" aria-label="Redo" title="Redo">↷</button>
+          </div><div id="article-rich-editor"></div><small>Write and format your article using the toolbar. Use headings to organise sections. Ctrl/Cmd+Z undoes an edit.</small>
+        </div>
       </div><div>
         <label>Author<input name="author" required maxlength="100" placeholder="Author’s name"></label>
         <label>Category<input name="category" maxlength="80" placeholder="Party planning"></label>
-        <label>Cover image URL<input name="cover" maxlength="2000" placeholder="https://… or /images/…"><small>Use an image URL you have permission to publish.</small></label>
-        <label>Image alternative text<input name="coverAlt" maxlength="200" placeholder="Describe what is in the photo"></label>
+        <div class="featured-image-field">
+          <label for="featured-image-file">Featured image</label>
+          <input id="featured-image-file" name="featuredImage" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="featured-image-help">
+          <input name="cover" type="hidden">
+          <small id="featured-image-help">Upload a JPG, PNG or WebP image up to 8 MB. It appears on the blog card, article page and social previews.</small>
+          <small id="featured-image-status" aria-live="polite"></small>
+          <div id="featured-image-preview" class="featured-image-preview" hidden>
+            <img id="featured-image-preview-image" alt="" loading="lazy">
+            <button type="button" id="remove-featured-image" class="featured-image-remove">Remove featured image</button>
+          </div>
+        </div>
+        <label>Image alternative text<input name="coverAlt" maxlength="200" placeholder="Describe what is in the photo"><small>Required when a featured image is set.</small></label>
         <fieldset><legend>Search engine appearance</legend>
           <label>SEO title<input name="seoTitle" maxlength="70" placeholder="Defaults to the article title"><small id="title-count">0 / 70 characters</small></label>
           <label>SEO description<textarea name="seoDescription" rows="4" maxlength="170" placeholder="Describe what readers will learn."></textarea><small id="description-count">0 / 170 characters</small></label>
@@ -57,4 +75,4 @@
       <div class="actions"><button type="submit" class="button" id="save">Save article</button><a id="preview" target="_blank" rel="noopener" hidden>Preview saved article ↗</a><a id="view" target="_blank" rel="noopener" hidden>View published article ↗</a></div>
     </form>
   </section>
-</main><script type="module" src="/blog-assets/admin.js"></script>
+</main><link rel="stylesheet" href="/blog-assets/quill.snow.css"><script src="/blog-assets/quill.js"></script><script type="module" src="/blog-assets/admin.js"></script>

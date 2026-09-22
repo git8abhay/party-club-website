@@ -116,3 +116,7 @@ Sign in at `/admin` with your **username or email and password**. Identifiers ar
 Passwords are salted scrypt hashes; no password is returned by the account API. Existing articles and SMTP settings remain in the same database. The schema migration invalidates legacy shared sessions. Run `blog:setup` with the first owner’s username, email and password to initialize a named account; this removes the old shared-password setting. Do not run setup with a reset flag during routine deployments.
 
 If you forget a password, another administrator can reset it in Team accounts. If the only administrator loses access, run `blog:setup` on the server with `BLOG_ADMIN_RESET=true`, the existing username/email and a new password. Email-based password recovery is not implemented.
+
+### Visual article editor
+
+Article content now uses a locally served Quill editor with H2/H3 headings, bold, italic, underline, ordered/bullet lists, quotes, links, clear formatting and undo/redo. Existing Markdown articles are converted for display when opened; no stored article is changed until Save. Saving uses semantic HTML, sanitized on the server with a restricted tag/attribute/scheme list. Public pages and saved previews render the same sanitized HTML; legacy Markdown remains supported. The article title supplies the sole H1. Quill assets are served from the installed runtime dependency (no CDN).

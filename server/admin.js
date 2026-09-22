@@ -5,6 +5,18 @@ let smtpDirty = false, smtpVersion = '';
 let currentUser = null;
 let csrf = '', posts = [], current = null, dirty = false, busy = false;
 const field = name => form.elements.namedItem(name);
+const articleEditor = new window.Quill('#article-rich-editor', {
+  theme: 'snow', placeholder: 'Write your article here…',
+  formats: ['header', 'bold', 'italic', 'underline', 'list', 'blockquote', 'link'],
+  modules: { toolbar: '#article-toolbar', history: { userOnly: true } },
+});
+articleEditor.root.setAttribute('role', 'textbox');
+articleEditor.root.setAttribute('aria-multiline', 'true');
+articleEditor.root.setAttribute('aria-labelledby', 'article-content-label');
+articleEditor.on('text-change', (_delta, _old, source) => { if (source === 'user') dirty = true; });
+$('article-undo').onclick = () => articleEditor.history.undo();
+$('article-redo').onclick = () => articleEditor.history.redo();
+
 const notice = (text, error = false) => { $('message').textContent = text; $('message').className = error ? 'error' : 'success'; };
 async function api(path, method = 'GET', data) {
   const response = await fetch('/api/blog' + path, { method, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }, ...(data ? { body: JSON.stringify(data) } : {}) });
@@ -43,6 +55,22 @@ function seoPreview() {
   $('title-count').textContent = `${field('seoTitle').value.length} / 70 characters`;
   $('description-count').textContent = `${field('seoDescription').value.length} / 170 characters`;
 }
+function updateFeaturedImagePreview() {
+  const file = field('featuredImage').files[0];
+  const url = file ? URL.createObjectURL(file) : field('cover').value.trim();
+  const preview = $('featured-image-preview');
+  const image = $('featured-image-preview-image');
+  $('featured-image-status').textContent = file ? `${file.name} will be uploaded when you save.` : '';
+  if (!url) {
+    preview.hidden = true;
+    image.removeAttribute('src');
+    image.alt = '';
+    return;
+  }
+  image.src = url;
+  image.alt = field('coverAlt').value.trim() || 'Featured image preview';
+  preview.hidden = false;
+}
 function editPost(post = null) {
   current = post; form.reset();
   for (const name of ['title', 'slug', 'excerpt', 'content', 'author', 'category', 'cover', 'coverAlt', 'seoTitle', 'seoDescription', 'status']) field(name).value = post?.[name] || (name === 'status' ? 'draft' : '');
@@ -50,15 +78,51 @@ function editPost(post = null) {
   $('editor-title').textContent = post ? 'Edit article' : 'New article';
   $('preview').hidden = !post; $('preview').href = post ? `/admin/preview/${post.id}` : '#';
   $('view').hidden = post?.status !== 'published'; $('view').href = post ? `/blog/${post.slug}` : '#';
-  dirty = false; form.hidden = false; seoPreview(); form.scrollIntoView({ behavior: 'smooth' }); field('title').focus();
+  articleEditor.setContents(articleEditor.clipboard.convert({ html: post?.renderedContent || '' }), 'silent');
+  articleEditor.history.clear();
+  dirty = false; form.hidden = false; seoPreview(); updateFeaturedImagePreview(); form.scrollIntoView({ behavior: 'smooth' }); field('title').focus();
 }
 form.addEventListener('input', () => { dirty = true; seoPreview(); });
+field('cover').addEventListener('input', updateFeaturedImagePreview);
+field('coverAlt').addEventListener('input', updateFeaturedImagePreview);
+field('featuredImage').addEventListener('change', () => {
+  const file = field('featuredImage').files[0];
+  if (file && file.size > 8 * 1024 * 1024) {
+    field('featuredImage').value = '';
+    $('featured-image-status').textContent = 'Image must be 8 MB or smaller.';
+    notice('Image must be 8 MB or smaller.', true);
+  }
+  dirty = true;
+  updateFeaturedImagePreview();
+});
+$('remove-featured-image').onclick = () => {
+  field('featuredImage').value = '';
+  field('cover').value = '';
+  field('coverAlt').value = '';
+  dirty = true;
+  updateFeaturedImagePreview();
+  field('cover').focus();
+};
 field('title').addEventListener('blur', () => { if (!field('slug').value) { field('slug').value = field('title').value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 100).replace(/-$/, ''); seoPreview(); } });
 $('new').onclick = () => { if (!busy && mayDiscard()) editPost(); };
 $('close').onclick = () => { if (!busy && mayDiscard()) { form.hidden = true; dirty = false; } };
 form.onsubmit = async event => {
   event.preventDefault(); if (busy) return;
+  if (!articleEditor.getText().trim()) { notice('Article content is required.', true); articleEditor.focus(); return; }
+  field('content').value = articleEditor.getSemanticHTML();
+  if (field('content').value.length > 100000) { notice('Article is too long. Please shorten it before saving.', true); return; }
+  const imageFile = field('featuredImage').files[0];
+  if (imageFile) {
+    const upload = new FormData(); upload.append('image', imageFile);
+    try {
+      const response = await fetch('/api/blog/upload', { method: 'POST', headers: { 'X-CSRF-Token': csrf }, body: upload });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Image upload failed.');
+      field('cover').value = result.url;
+    } catch (error) { notice(error.message, true); return; }
+  }
   const data = Object.fromEntries(new FormData(form));
+  delete data.featuredImage;
   if (current) data.updatedAt = current.updatedAt;
   if (data.status === 'published' && current?.status !== 'published' && !confirm('Publish this article? It will become visible to everyone.')) return;
   busy = true; $('save').disabled = true;
